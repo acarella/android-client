@@ -1,4 +1,4 @@
-package com.mifos.mifosxdroid;
+package com.mifos.mifosxdroid.online;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+
+import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.FragmentAdapter;
 
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ import java.util.List;
  */
 
 
-public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener, ClientListFragment.FragmentChangeListener {
+public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener, ClientListFragment.FragmentChangeListener{
 
     public static Context context;
     private ViewPager viewPager;
@@ -112,4 +114,5 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
         return tab;
     }
+
 }

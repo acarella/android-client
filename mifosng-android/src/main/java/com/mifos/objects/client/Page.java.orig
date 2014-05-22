@@ -6,9 +6,10 @@ import java.util.List;
 /**
  * Created by ishankhanna on 09/02/14.
  */
-public class Page {
+public class Page<T> {
 
     private int totalFilteredRecords;
+<<<<<<< HEAD:mifosng-android/src/main/java/com/mifos/objects/Client/Page.java
     private List<Client> pageItems = new ArrayList<Client>();
 
 
@@ -16,6 +17,15 @@ public class Page {
         return pageItems;
     }
     public void setPageItems(List<Client> pageItems) {
+=======
+    private List<T> pageItems = new ArrayList<T>();
+
+
+    public List<T> getPageItems() {
+        return pageItems;
+    }
+    public void setPageItems(List<T> pageItems) {
+>>>>>>> upstream/master:mifosng-android/src/main/java/com/mifos/objects/client/Page.java
         this.pageItems = pageItems;
     }
 

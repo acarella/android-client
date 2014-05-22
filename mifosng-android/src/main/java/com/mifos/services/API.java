@@ -1,13 +1,15 @@
-package com.mifos.utils.services;
+package com.mifos.services;
 
 import android.util.Log;
 import com.mifos.objects.SearchedEntity;
 import com.mifos.objects.User;
 import com.mifos.objects.accounts.ClientAccounts;
+import com.mifos.objects.client.Client;
 import com.mifos.objects.client.Page;
-import com.mifos.objects.client.PageItem;
 import com.mifos.objects.db.CollectionSheet;
-import com.mifos.utils.services.data.Payload;
+import com.mifos.services.data.Payload;
+import com.mifos.services.data.CollectionSheetPayload;
+import com.mifos.services.data.SaveResponse;
 import retrofit.*;
 import retrofit.client.Response;
 import retrofit.http.*;
@@ -27,7 +29,7 @@ public class API {
                 public void intercept(RequestFacade request) {
                     request.addHeader("Accept", "application/json");
                     request.addHeader("Content-Type", "application/json");
-                    request.addHeader("X-Mifos-Platform-TenantId", "demo2");
+                    request.addHeader("X-Mifos-Platform-TenantId", "default");
                     request.addHeader("Authorization", "Basic bWlmb3M6cGFzc3dvcmQ=");
                 }
             })
@@ -72,7 +74,8 @@ public class API {
         public void getAllCenters(Callback<List<com.mifos.objects.Center>> callback);
         @POST("/centers/2?command=generateCollectionSheet")
         public void getCenter(@Body Payload payload, Callback<CollectionSheet> callback);
-
+        @POST("/centers/2?command=saveCollectionSheet")
+        public SaveResponse saveCollectionSheet(@Body CollectionSheetPayload collectionSheetPayload);
     }
 
 
@@ -93,7 +96,7 @@ public class API {
          * @param callback - Callback to handle the response and/or error
          */
         @GET("/clients")
-        public void listAllClients(Callback<Page> callback);
+        public void listAllClients(Callback<Page<Client>> callback);
 
 
         /**
@@ -101,7 +104,7 @@ public class API {
          * @param callback - Callback to handle the response and/or error
          */
         @GET("/clients/{clientId}")
-        public void getClient(@Path("clientId") int clientId, Callback<PageItem> callback);
+        public void getClient(@Path("clientId") int clientId, Callback<Client> callback);
 
 
     }
@@ -113,6 +116,14 @@ public class API {
         @GET("/search?resource=clients")
         public void searchClientsByName(@Query("query") String clientName, Callback<List<SearchedEntity>> callback);
 
+
+    }
+
+    public static LoanService loanService = restAdapter.create(LoanService.class);
+    public interface LoanService {
+
+        @GET("/loans/{loanId}")
+        public void getLoanById(@Path("loanId") int loanId, Callback<com.mifos.objects.accounts.loan.Loan> callback);
 
     }
 
@@ -142,7 +153,6 @@ public class API {
 
         return cb;
     }
-
 
     public static <T> Callback<List<T>> getCallbackList(List<T> t) {
         Callback<List<T>> cb = new Callback<List<T>>() {
