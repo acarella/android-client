@@ -4,9 +4,12 @@ import android.util.Log;
 import com.mifos.objects.SearchedEntity;
 import com.mifos.objects.User;
 import com.mifos.objects.accounts.ClientAccounts;
+import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
+import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
 import com.mifos.objects.client.Client;
 import com.mifos.objects.client.Page;
 import com.mifos.objects.db.CollectionSheet;
+import com.mifos.objects.templates.loans.LoanRepaymentTemplate;
 import com.mifos.services.data.Payload;
 import com.mifos.services.data.CollectionSheetPayload;
 import com.mifos.services.data.SaveResponse;
@@ -61,10 +64,8 @@ public class API {
                 }
             }
 
-
             return retrofitError;
         }
-
 
     }
 
@@ -80,6 +81,7 @@ public class API {
 
 
     public static CenterService centerService = restAdapter.create(CenterService.class);
+
     public interface ClientAccountsService {
 
         @GET("/clients/{clientId}/accounts")
@@ -91,21 +93,11 @@ public class API {
 
     public interface ClientService {
 
-
-        /**
-         * @param callback - Callback to handle the response and/or error
-         */
         @GET("/clients")
         public void listAllClients(Callback<Page<Client>> callback);
 
-
-        /**
-         * @param clientId - ID of the client
-         * @param callback - Callback to handle the response and/or error
-         */
         @GET("/clients/{clientId}")
         public void getClient(@Path("clientId") int clientId, Callback<Client> callback);
-
 
     }
 
@@ -124,6 +116,14 @@ public class API {
 
         @GET("/loans/{loanId}")
         public void getLoanById(@Path("loanId") int loanId, Callback<com.mifos.objects.accounts.loan.Loan> callback);
+
+        @GET("/loans/{loanId}/transactions/template?command=repayment")
+        public void getLoanRepaymentTemplate(@Path("loanId") int loanId, Callback<LoanRepaymentTemplate> callback);
+
+        @POST("/loans/{loanId}/transactions?command=repayment")
+        public void submitPayment(@Path("loanId") int loanId,
+                                  @Body LoanRepaymentRequest loanRepaymentRequest,
+                                  Callback<LoanRepaymentResponse> loanRepaymentResponseCallback);
 
     }
 
