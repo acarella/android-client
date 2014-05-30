@@ -34,7 +34,7 @@ import retrofit.client.Response;
 /**
  * Created by ishankhanna on 09/02/14.
  */
-public class ClientListFragment extends Fragment {
+public class  ClientListFragment extends Fragment {
 
 
     @InjectView(R.id.lv_clients) ListView lv_clients;
