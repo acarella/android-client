@@ -76,7 +76,7 @@ public class  ClientListFragment extends Fragment {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                        Intent clientActivityIntent = new Intent(getActivity(),ClientActivity.class);
+                        Intent clientActivityIntent = new Intent(getActivity(),PGSClientActivity.class);
                         clientActivityIntent.putExtra(Constants.CLIENT_ID, pageItems.get(i).getId());
                         startActivity(clientActivityIntent);
 
