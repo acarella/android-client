@@ -17,18 +17,17 @@ import com.mifos.utils.FragmentConstants;
 import butterknife.ButterKnife;
 
 public class PGSClientActivity extends ActionBarActivity implements PGSClientDetailsFragment.OnFragmentInteractionListener,
-        SavingsAccountSummaryFragment.OnFragmentInteractionListener{
+        PGSAccountSummaryFragment.OnFragmentInteractionListener  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_global_container_layout);
         ButterKnife.inject(this);
         final int clientId = getIntent().getExtras().getInt(Constants.CLIENT_ID);
-        FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
-        PGSClientDetailsFragment pgsClientDetailsFragment = PGSClientDetailsFragment.newInstance(clientId);
-        fragmentTransaction.replace(R.id.global_container, pgsClientDetailsFragment).commit();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        PGSAccountSummaryFragment pgsAccountSummaryFragment = PGSAccountSummaryFragment.newInstance(clientId);
+        fragmentTransaction.replace(R.id.global_container, pgsAccountSummaryFragment).commit();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,7 +68,16 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
         fragmentTransaction.replace(R.id.global_container,savingsAccountSummaryFragment).commit();
     }
 
+    @Override
+    public void PGSAccountSummary(int savingsAccountNumber) {
 
+        SavingsAccountSummaryFragment savingsAccountSummaryFragment
+                = SavingsAccountSummaryFragment.newInstance(savingsAccountNumber);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
+        fragmentTransaction.replace(R.id.global_container,savingsAccountSummaryFragment).commit();
+
+    }
 
     public void makeRepayment(Loan loan) {
 

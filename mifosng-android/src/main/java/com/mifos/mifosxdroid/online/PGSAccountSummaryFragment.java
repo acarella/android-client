@@ -1,6 +1,7 @@
 package com.mifos.mifosxdroid.online;
 
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,8 +31,9 @@ import retrofit.client.Response;
 
 /**
  * Created by antoniocarella on 5/30/14.
+ * Uses code from SavingsAccountSummaryFragment
  */
-public class PGSAccountSummaryFragment {
+public class PGSAccountSummaryFragment extends Fragment{
 
     @InjectView(R.id.tv_clientName)
     TextView tv_clientName;
@@ -59,8 +61,8 @@ public class PGSAccountSummaryFragment {
 
     ActionBar actionBar;
 
-    public static SavingsAccountSummaryFragment newInstance(int savingsAccountNumber) {
-        SavingsAccountSummaryFragment fragment = new SavingsAccountSummaryFragment();
+    public static PGSAccountSummaryFragment newInstance(int savingsAccountNumber) {
+        PGSAccountSummaryFragment fragment = new PGSAccountSummaryFragment();
         Bundle args = new Bundle();
         args.putInt(Constants.SAVINGS_ACCOUNT_NUMBER, savingsAccountNumber);
         fragment.setArguments(args);
@@ -82,7 +84,7 @@ public class PGSAccountSummaryFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_savings_account_summary, container, false);
+        rootView = inflater.inflate(R.layout.fragment_pgs_account_summary, container, false);
         activity = (ActionBarActivity) getActivity();
         safeUIBlockingUtility = new SafeUIBlockingUtility(PGSAccountSummaryFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -98,7 +100,7 @@ public class PGSAccountSummaryFragment {
 
         safeUIBlockingUtility.safelyBlockUI();
 
-        actionBar.setTitle(getResources().getString(R.string.savingsAccountSummary));
+        actionBar.setTitle(getResources().getString(R.string.pgsAccountSummary));
         /**
          * This Method will hits end point ?associations=transactions
          */
@@ -132,7 +134,7 @@ public class PGSAccountSummaryFragment {
 
                         Log.i(getActivity().getLocalClassName(), retrofitError.getLocalizedMessage());
 
-                        Toast.makeText(activity, "Savings Account not found.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "PayGoSol Account not found.", Toast.LENGTH_SHORT).show();
                         safeUIBlockingUtility.safelyUnBlockUI();
                     }
                 });

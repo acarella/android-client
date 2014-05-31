@@ -81,7 +81,7 @@ import retrofit.client.Response;
   * this fragment using the provided parameters.
   *
   * @param clientId Client's Id
- * @return A new instance of fragment ClientDetailsFragment.
+ * @return A new instance of fragment PGSClientDetailsFragment.
  */
 public static PGSClientDetailsFragment newInstance(int clientId) {
         PGSClientDetailsFragment fragment = new PGSClientDetailsFragment();
@@ -108,7 +108,7 @@ public View onCreateView(LayoutInflater inflater, ViewGroup container,
         Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        rootView = inflater.inflate(R.layout.fragment_client_details, container, false);
+        rootView = inflater.inflate(R.layout.fragment_pgs_account_summary, container, false);
         activity = (ActionBarActivity) getActivity();
         safeUIBlockingUtility = new SafeUIBlockingUtility(PGSClientDetailsFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -128,7 +128,7 @@ public void getClientInfo(int clientId){
 public void success(Client client, Response response) {
 
         if (client != null) {
-        actionBar.setTitle("Mifos Client - " + client.getLastname());
+        actionBar.setTitle("PayGoSol Client - " + client.getLastname());
         tv_fullName.setText(client.getDisplayName());
         tv_accountNumber.setText(client.getAccountNo());
         tv_externalId.setText(client.getExternalId());
@@ -274,6 +274,7 @@ public interface OnFragmentInteractionListener {
 
     public void loadLoanAccountSummary(int loanAccountNumber);
     public void loadSavingsAccountSummary(int savingsAccountNumber);
+    public void PGSAccountSummary(int savingsAccountNumber);
 
 }
 

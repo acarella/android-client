@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
@@ -49,7 +50,7 @@ import retrofit.client.Response;
 /**
  * Created by antoniocarella on 5/30/14.
  */
-public class PGSPaymentFragment {
+public class PGSPaymentFragment extends Fragment{
 
 //TODO Test and Remove Amount Due and Fees Due from Instance Method (Don't Pass'em as arguments)
 
@@ -135,10 +136,10 @@ public class PGSPaymentFragment {
 
         rootView = inflater.inflate(R.layout.fragment_loan_repayment, container, false);
         activity = (ActionBarActivity) getActivity();
-        safeUIBlockingUtility = new SafeUIBlockingUtility(LoanRepaymentFragment.this.getActivity());
+        safeUIBlockingUtility = new SafeUIBlockingUtility(PGSPaymentFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         actionBar = activity.getSupportActionBar();
-        actionBar.setTitle("Loan Repayment");
+        actionBar.setTitle("PayGoSol Payment");
         ButterKnife.inject(this, rootView);
 
         inflateUI();

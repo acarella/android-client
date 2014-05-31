@@ -32,6 +32,7 @@
             android:name="com.mifos.mifosxdroid.online.DashboardFragmentActivity"
             android:label="Dashboard" >
         </activity>
+
         <activity android:name="com.mifos.mifosxdroid.online.ClientSearchActivity" />
         <activity
             android:name="com.mifos.mifosxdroid.GroupActivity"
@@ -43,6 +44,12 @@
             android:name="com.mifos.mifosxdroid.LoanActivity"
             android:configChanges="orientation|screenSize" />
 
+        <!-- PayGoSol activities -->
+        <activity
+            android:name="com.mifos.mifosxdroid.online.PGSClientActivity"
+            android:label="PGSClientActivity" />
+        <!-- end PayGoSol activities -->
+        
         <meta-data
             android:name="DATABASE"
             android:value="mifos.db" />

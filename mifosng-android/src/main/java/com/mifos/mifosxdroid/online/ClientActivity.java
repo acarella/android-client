@@ -27,7 +27,6 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
         fragmentTransaction.replace(R.id.global_container, clientDetailsFragment).commit();
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
