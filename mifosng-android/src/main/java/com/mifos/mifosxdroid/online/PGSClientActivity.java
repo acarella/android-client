@@ -93,7 +93,7 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
     }
 
     @Override
-    public void makeWithdrawal() {
+    public void hideWithdrawal() {
 
     }
 }

@@ -36,6 +36,6 @@
     <string name="savingsAccountSummary">Savings Account Summary</string>
     <string name="pgsAccountSummary">PayGoSol Account Summary</string>
     <string name="recentTransactions">Recent Transactions</string>
-    <string name="hideWithdrawals">Hide Withdrawals</string>
-    <string name="showWithdrawals">Show Withdrawals</string>
+    <string name="showDepositsOnly">Show Deposits Only</string>
+    <string name="showAll">Show All</string>
 </resources>

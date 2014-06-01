@@ -11,12 +11,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mifos.mifosxdroid.R;
+import com.mifos.mifosxdroid.adapters.PGSAccountTransactionsListAdapter;
 import com.mifos.mifosxdroid.adapters.SavingsAccountTransactionsListAdapter;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.services.API;
@@ -44,10 +46,14 @@ public class PGSAccountSummaryFragment extends Fragment{
     @InjectView(R.id.tv_savings_account_balance) TextView tv_savingsAccountBalance;
     @InjectView(R.id.tv_total_deposits) TextView tv_totalDeposits;
     @InjectView(R.id.tv_total_withdrawals) TextView tv_totalWithdrawals;
-    @InjectView(R.id.lv_last_five_savings_transactions)
-    ListView lv_lastFiveTransactions;
+    @InjectView(R.id.lv_recent_pgs_transactions)
+    ListView lv_recentPGSTransactions;
+    @InjectView(R.id.bt_hide_withdrawal)
+    Button bt_hideWithdrawal;
 
     private OnFragmentInteractionListener mListener;
+
+    private PGSAccountTransactionsListAdapter pgsAccountTransactionsListAdapter;
 
     int savingsAccountNumber;
 
@@ -60,6 +66,8 @@ public class PGSAccountSummaryFragment extends Fragment{
     SharedPreferences sharedPreferences;
 
     ActionBar actionBar;
+
+    Boolean areOnlyDepositsShowing = false;
 
     public static PGSAccountSummaryFragment newInstance(int savingsAccountNumber) {
         PGSAccountSummaryFragment fragment = new PGSAccountSummaryFragment();
@@ -93,6 +101,22 @@ public class PGSAccountSummaryFragment extends Fragment{
 
         inflateSavingsAccountSummary();
 
+        bt_hideWithdrawal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!areOnlyDepositsShowing) {
+                    bt_hideWithdrawal.setText("Show all");
+                    areOnlyDepositsShowing = true;
+                    pgsAccountTransactionsListAdapter.getFilter().filter("Deposit");
+                } else {
+                    bt_hideWithdrawal.setText("Show Deposits Only");
+                    areOnlyDepositsShowing = false;
+
+                    inflateSavingsAccountSummary();
+                }
+            }
+        });
+
         return rootView;
     }
 
@@ -118,11 +142,10 @@ public class PGSAccountSummaryFragment extends Fragment{
                             tv_totalDeposits.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalDeposits()));
                             tv_totalWithdrawals.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalWithdrawals()));
 
-                            SavingsAccountTransactionsListAdapter savingsAccountTransactionsListAdapter
-                                    = new SavingsAccountTransactionsListAdapter(getActivity().getApplicationContext(),
-                                    savingsAccountWithAssociations.getTransactions().size()<5?
-                                            savingsAccountWithAssociations.getTransactions():savingsAccountWithAssociations.getTransactions().subList(0,5));
-                            lv_lastFiveTransactions.setAdapter(savingsAccountTransactionsListAdapter);
+                            pgsAccountTransactionsListAdapter
+                                    = new PGSAccountTransactionsListAdapter(getActivity().getApplicationContext(),
+                                    savingsAccountWithAssociations.getTransactions());
+                            lv_recentPGSTransactions.setAdapter(pgsAccountTransactionsListAdapter);
 
                             safeUIBlockingUtility.safelyUnBlockUI();
 
@@ -138,8 +161,8 @@ public class PGSAccountSummaryFragment extends Fragment{
                         safeUIBlockingUtility.safelyUnBlockUI();
                     }
                 });
-
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -162,7 +185,7 @@ public class PGSAccountSummaryFragment extends Fragment{
     public interface OnFragmentInteractionListener {
 
         public void makeDeposit();
-        public void makeWithdrawal();
+        public void hideWithdrawal();
     }
 
 }
