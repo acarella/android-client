@@ -20,13 +20,19 @@ import android.widget.Toast;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.PGSAccountTransactionsListAdapter;
 import com.mifos.mifosxdroid.adapters.SavingsAccountTransactionsListAdapter;
+import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
+import com.mifos.objects.accounts.savings.Transaction;
 import com.mifos.services.API;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -37,19 +43,16 @@ import retrofit.client.Response;
  */
 public class PGSAccountSummaryFragment extends Fragment{
 
-    @InjectView(R.id.tv_clientName)
-    TextView tv_clientName;
-    @InjectView(R.id.quickContactBadge_client)
-    QuickContactBadge quickContactBadge;
+    @InjectView(R.id.tv_clientName)TextView tv_clientName;
+    @InjectView(R.id.quickContactBadge_client) QuickContactBadge quickContactBadge;
     @InjectView(R.id.tv_savings_product_short_name) TextView tv_savingsProductName;
     @InjectView(R.id.tv_savingsAccountNumber) TextView tv_savingsAccountNumber;
     @InjectView(R.id.tv_savings_account_balance) TextView tv_savingsAccountBalance;
     @InjectView(R.id.tv_total_deposits) TextView tv_totalDeposits;
     @InjectView(R.id.tv_total_withdrawals) TextView tv_totalWithdrawals;
-    @InjectView(R.id.lv_recent_pgs_transactions)
-    ListView lv_recentPGSTransactions;
-    @InjectView(R.id.bt_hide_withdrawal)
-    Button bt_hideWithdrawal;
+    @InjectView(R.id.lv_recent_pgs_transactions) ListView lv_recentPGSTransactions;
+    @InjectView(R.id.bt_pgs_hide_withdrawal) Button bt_hideWithdrawal;
+    @InjectView(R.id.bt_pgs_make_deposit) Button bt_makeDeposit;
 
     private OnFragmentInteractionListener mListener;
 
@@ -68,6 +71,7 @@ public class PGSAccountSummaryFragment extends Fragment{
     ActionBar actionBar;
 
     Boolean areOnlyDepositsShowing = false;
+    List<Transaction> pgsTransactionsList = new ArrayList<Transaction>();
 
     public static PGSAccountSummaryFragment newInstance(int savingsAccountNumber) {
         PGSAccountSummaryFragment fragment = new PGSAccountSummaryFragment();
@@ -112,11 +116,21 @@ public class PGSAccountSummaryFragment extends Fragment{
                     bt_hideWithdrawal.setText("Show Deposits Only");
                     areOnlyDepositsShowing = false;
 
-                    inflateSavingsAccountSummary();
+                    pgsAccountTransactionsListAdapter = new PGSAccountTransactionsListAdapter(getActivity().getApplicationContext(),
+                            pgsTransactionsList);
+                    lv_recentPGSTransactions.setAdapter(pgsAccountTransactionsListAdapter);
                 }
             }
         });
 
+        /*
+        bt_makeDeposit.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Log.d("Make Deposit", "Make Deposit");
+            }
+        });
+        */
         return rootView;
     }
 
@@ -131,20 +145,24 @@ public class PGSAccountSummaryFragment extends Fragment{
         API.savingsAccountService.getSavingsAccountWithAssociations(savingsAccountNumber,
                 "transactions", new Callback<SavingsAccountWithAssociations>() {
                     @Override
-                    public void success(SavingsAccountWithAssociations savingsAccountWithAssociations, Response response) {
+                    public void success(SavingsAccountWithAssociations pgsAccountWithAssociations, Response response) {
 
-                        if(savingsAccountWithAssociations!=null) {
+                        if(pgsAccountWithAssociations!=null) {
 
-                            tv_clientName.setText(savingsAccountWithAssociations.getClientName());
-                            tv_savingsProductName.setText(savingsAccountWithAssociations.getSavingsProductName());
-                            tv_savingsAccountNumber.setText(savingsAccountWithAssociations.getAccountNo());
-                            tv_savingsAccountBalance.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getAccountBalance()));
-                            tv_totalDeposits.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalDeposits()));
-                            tv_totalWithdrawals.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalWithdrawals()));
+                            tv_clientName.setText(pgsAccountWithAssociations.getClientName());
+                            tv_savingsProductName.setText(pgsAccountWithAssociations.getSavingsProductName());
+                            tv_savingsAccountNumber.setText(pgsAccountWithAssociations.getAccountNo());
+                            tv_savingsAccountBalance.setText(String.valueOf(pgsAccountWithAssociations.getSummary().getAccountBalance()));
+                            tv_totalDeposits.setText(String.valueOf(pgsAccountWithAssociations.getSummary().getTotalDeposits()));
+                            tv_totalWithdrawals.setText(String.valueOf(pgsAccountWithAssociations.getSummary().getTotalWithdrawals()));
+
+                            //Storing this in order to load it when user wishes to see complete list
+                            // of transactions after having filtered it.
+                            pgsTransactionsList = pgsAccountWithAssociations.getTransactions();
 
                             pgsAccountTransactionsListAdapter
                                     = new PGSAccountTransactionsListAdapter(getActivity().getApplicationContext(),
-                                    savingsAccountWithAssociations.getTransactions());
+                                    pgsAccountWithAssociations.getTransactions());
                             lv_recentPGSTransactions.setAdapter(pgsAccountTransactionsListAdapter);
 
                             safeUIBlockingUtility.safelyUnBlockUI();
@@ -182,10 +200,14 @@ public class PGSAccountSummaryFragment extends Fragment{
     }
 
 
+    @OnClick(R.id.bt_pgs_make_deposit)
+    public void makeDepositButtonClicked(){
+        mListener.makeDeposit(savingsAccountNumber);
+    }
+
     public interface OnFragmentInteractionListener {
 
-        public void makeDeposit();
-        public void hideWithdrawal();
+        public void makeDeposit(int savingsAccountId);
     }
 
 }

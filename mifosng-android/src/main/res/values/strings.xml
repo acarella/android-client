@@ -38,4 +38,9 @@
     <string name="recentTransactions">Recent Transactions</string>
     <string name="showDepositsOnly">Show Deposits Only</string>
     <string name="showAll">Show All</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="amount">Amount</string>
+    <string name="submitPayment">Submit Payment</string>
+
 </resources>

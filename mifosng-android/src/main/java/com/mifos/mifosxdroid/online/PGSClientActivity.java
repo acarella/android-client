@@ -7,10 +7,12 @@ package com.mifos.mifosxdroid.online;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.mifos.mifosxdroid.R;
 import com.mifos.objects.accounts.loan.Loan;
+import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.utils.Constants;
 import com.mifos.utils.FragmentConstants;
 
@@ -25,6 +27,8 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
         ButterKnife.inject(this);
         final int clientId = getIntent().getExtras().getInt(Constants.CLIENT_ID);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        //TODO Find a way to retrieve PayGoSol account from clientID
+        // Currently, this is NOT correct. The clientId is being passed as if it were a savingsID
         PGSAccountSummaryFragment pgsAccountSummaryFragment = PGSAccountSummaryFragment.newInstance(clientId);
         fragmentTransaction.replace(R.id.global_container, pgsAccountSummaryFragment).commit();
     }
@@ -46,17 +50,6 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void loadLoanAccountSummary(int loanAccountNumber) {
-
-        LoanAccountSummaryFragment loanAccountSummaryFragment
-                = LoanAccountSummaryFragment.newInstance(loanAccountNumber);
-        FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
-        fragmentTransaction.replace(R.id.global_container,loanAccountSummaryFragment).commit();
-
     }
 
     @Override
@@ -87,13 +80,14 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
         fragmentTransaction.replace(R.id.global_container, loanRepaymentFragment).commit();
     }
 
-    @Override
-    public void makeDeposit() {
-
+    public void makeDeposit(SavingsAccount savingsAccount) {
+        PGSPaymentFragment pgsPaymentFragment = PGSPaymentFragment.newInstance(savingsAccount);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_PGS_ACCOUNT_SUMMARY);
+        fragmentTransaction.replace(R.id.global_container, pgsPaymentFragment).commit();
     }
 
-    @Override
-    public void hideWithdrawal() {
-
+    public void makeDeposit(int savingsId) {
+        Log.d("Test", "test");
     }
 }

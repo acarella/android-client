@@ -25,11 +25,9 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.jakewharton.fliptables.FlipTable;
 import com.mifos.mifosxdroid.R;
-import com.mifos.objects.accounts.loan.Loan;
-import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
-import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
-import com.mifos.objects.templates.loans.LoanRepaymentTemplate;
-import com.mifos.objects.templates.loans.PaymentTypeOption;
+import com.mifos.objects.accounts.savings.SavingsAccount;
+import com.mifos.objects.accounts.savings.SavingsDepositRequest;
+import com.mifos.objects.accounts.savings.SavingsDepositResponse;
 import com.mifos.services.API;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
@@ -64,33 +62,16 @@ public class PGSPaymentFragment extends Fragment{
 
     ActionBar actionBar;
 
-
     // Arguments Passed From the Loan Account Summary Fragment
     String clientName;
-    String loanAccountNumber;
-    String loanProductName;
-    Double amountInArrears;
+    String pgsAccountNumber;
 
-    // Values fetched from Loan Repayment Template
-    List<PaymentTypeOption> paymentTypeOptionList;
-    HashMap<String, Integer> paymentTypeHashMap = new HashMap<String, Integer>();
-
-    @InjectView(R.id.tv_clientName)
-    TextView tv_clientName;
-    @InjectView(R.id.tv_loan_product_short_name) TextView tv_loanProductShortName;
-    @InjectView(R.id.tv_loanAccountNumber) TextView tv_loanAccountNumber;
-    @InjectView(R.id.tv_in_arrears) TextView tv_inArrears;
-    @InjectView(R.id.tv_amount_due) TextView tv_amountDue;
-    @InjectView(R.id.et_repayment_date)
-    EditText et_repaymentDate;
-    @InjectView(R.id.et_amount) EditText et_amount;
-    @InjectView(R.id.et_additional_payment) EditText et_additionalPayment;
-    @InjectView(R.id.et_fees) EditText et_fees;
-    @InjectView(R.id.tv_total) TextView tv_total;
-    @InjectView(R.id.sp_payment_type)
-    Spinner sp_paymentType;
-    @InjectView(R.id.bt_paynow)
-    Button bt_paynow;
+    @InjectView(R.id.tv_clientName) TextView tv_clientName;
+    @InjectView(R.id.et_pgs_payment_date) EditText et_paymentDate;
+    @InjectView(R.id.et_pgs_payment_time) EditText et_paymentTime;
+    @InjectView(R.id.et_pgs_payment_amount) EditText et_amount;
+    @InjectView(R.id.bt_paynow) Button bt_paynow;
+    @InjectView(R.id.bt_cancelPayment) Button bt_cancel;
 
     private OnFragmentInteractionListener mListener;
 
@@ -98,17 +79,14 @@ public class PGSPaymentFragment extends Fragment{
         // Required empty public constructor
     }
 
-    public static LoanRepaymentFragment newInstance(Loan loan) {
-        LoanRepaymentFragment fragment = new LoanRepaymentFragment();
+    public static PGSPaymentFragment newInstance(SavingsAccount pgsAccount) {
+        PGSPaymentFragment fragment = new PGSPaymentFragment();
         Bundle args = new Bundle();
-        if(loan != null)
+        if(pgsAccount != null)
         {
-            args.putString(Constants.CLIENT_NAME, loan.getClientName());
-            args.putString(Constants.LOAN_PRODUCT_NAME, loan.getLoanProductName());
-            args.putString(Constants.LOAN_ACCOUNT_NUMBER, loan.getAccountNo());
-            args.putDouble(Constants.AMOUNT_IN_ARREARS, loan.getSummary().getTotalOverdue());
-            //args.putDouble(Constants.AMOUNT_DUE, loan.getSummary().getPrincipalDisbursed());
-            //args.putDouble(Constants.FEES_DUE, loan.getSummary().getFeeChargesOutstanding());
+            //args.putString(Constants.CLIENT_NAME, pgsAccount.getClientName());
+            args.putString(Constants.SAVINGS_PRODUCT_NAME, pgsAccount.getProductName());
+            args.putString(Constants.SAVINGS_ACCOUNT_NUMBER, pgsAccount.getAccountNo());
             fragment.setArguments(args);
         }
         return fragment;
@@ -120,11 +98,7 @@ public class PGSPaymentFragment extends Fragment{
         if (getArguments() != null) {
 
             clientName = getArguments().getString(Constants.CLIENT_NAME);
-            loanAccountNumber = getArguments().getString(Constants.LOAN_ACCOUNT_NUMBER);
-            loanProductName = getArguments().getString(Constants.LOAN_PRODUCT_NAME);
-            amountInArrears = getArguments().getDouble(Constants.AMOUNT_IN_ARREARS);
-            //amountDue = getArguments().getDouble(Constants.AMOUNT_DUE);
-            //fees = getArguments().getDouble(Constants.FEES_DUE);
+            pgsAccountNumber = getArguments().getString(Constants.LOAN_ACCOUNT_NUMBER);
         }
     }
 
@@ -134,7 +108,7 @@ public class PGSPaymentFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        rootView = inflater.inflate(R.layout.fragment_loan_repayment, container, false);
+        rootView = inflater.inflate(R.layout.pgs_payment, container, false);
         activity = (ActionBarActivity) getActivity();
         safeUIBlockingUtility = new SafeUIBlockingUtility(PGSPaymentFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -166,171 +140,24 @@ public class PGSPaymentFragment extends Fragment{
     }
 
     public void inflateUI(){
-
-        safeUIBlockingUtility.safelyBlockUI();
-
         tv_clientName.setText(clientName);
-        tv_loanProductShortName.setText(loanProductName);
-        tv_loanAccountNumber.setText(loanAccountNumber);
-        tv_inArrears.setText(String.valueOf(amountInArrears));
-
-        //Setup Form with Default Values
         et_amount.setText("0.0");
-
-        et_amount.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                try {
-                    tv_total.setText(String.valueOf(calculateTotal()));
-                } catch (NumberFormatException nfe) {
-                    et_amount.setText("0");
-                } finally {
-                    tv_total.setText(String.valueOf(calculateTotal()));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        et_additionalPayment.setText("0.0");
-
-        et_additionalPayment.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                try{
-                    tv_total.setText(String.valueOf(calculateTotal()));
-                }catch (NumberFormatException nfe){
-                    et_additionalPayment.setText("0");
-                }finally {
-                    tv_total.setText(String.valueOf(calculateTotal()));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        et_fees.setText("0.0");
-
-        et_fees.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                try{
-                    tv_total.setText(String.valueOf(calculateTotal()));
-                }catch (NumberFormatException nfe){
-                    et_fees.setText("0");
-                }finally {
-                    tv_total.setText(String.valueOf(calculateTotal()));
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        inflateRepaymentDate();
-
-        inflatePaymentOptions();
-
-        tv_total.setText(String.valueOf(calculateTotal()));
-
-    }
-
-    public Double calculateTotal(){
-
-        return Double.parseDouble(et_amount.getText().toString())
-                +Double.parseDouble(et_additionalPayment.getText().toString())
-                +Double.parseDouble(et_fees.getText().toString());
-
+        inflatePaymentDate();
     }
 
     public interface OnFragmentInteractionListener {
 
     }
 
-    public void inflatePaymentOptions(){
-
-        API.loanService.getLoanRepaymentTemplate(Integer.parseInt(loanAccountNumber), new Callback<LoanRepaymentTemplate>() {
-
-            @Override
-            public void success(LoanRepaymentTemplate loanRepaymentTemplate, Response response) {
-
-                if(loanRepaymentTemplate != null)
-                {
-                    tv_amountDue.setText(String.valueOf(loanRepaymentTemplate.getAmount()));
-
-                    inflateRepaymentDate();
-
-                    List<String> listOfPaymentTypes = new ArrayList<String>();
-
-                    //Currently this method assumes that Positions are Unique for each paymentType
-                    //TODO Implement a Duplication check on positions and sort them and add into listOfPaymentTypes
-                    paymentTypeOptionList = loanRepaymentTemplate.getPaymentTypeOptions();
-                    Iterator<PaymentTypeOption> paymentTypeOptionIterator = paymentTypeOptionList.iterator();
-                    while(paymentTypeOptionIterator.hasNext())
-                    {
-                        PaymentTypeOption paymentTypeOption = paymentTypeOptionIterator.next();
-                        listOfPaymentTypes.add(paymentTypeOption.getPosition(),paymentTypeOption.getName());
-                        paymentTypeHashMap.put(paymentTypeOption.getName(),paymentTypeOption.getId());
-                    }
-
-                    ArrayAdapter<String> paymentTypeAdapter = new ArrayAdapter<String>(getActivity(),
-                            android.R.layout.simple_spinner_item, listOfPaymentTypes);
-
-                    paymentTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    sp_paymentType.setAdapter(paymentTypeAdapter);
-
-                    et_amount.setText(String.valueOf(loanRepaymentTemplate.getPrincipalPortion()+loanRepaymentTemplate.getInterestPortion()));
-                    et_additionalPayment.setText("0.0");
-                    et_fees.setText(String.valueOf(loanRepaymentTemplate.getFeeChargesPortion()));
-
-                }
-
-                safeUIBlockingUtility.safelyUnBlockUI();
-
-            }
-
-            @Override
-            public void failure(RetrofitError retrofitError) {
-
-                safeUIBlockingUtility.safelyUnBlockUI();
-
-            }
-        });
-
-    }
-
-    public void inflateRepaymentDate(){
+    public void inflatePaymentDate(){
 
         Calendar calendar = Calendar.getInstance();
         final int year = calendar.get(Calendar.YEAR);
         final int month = calendar.get(Calendar.MONTH);
         final int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        et_repaymentDate.setText(new StringBuilder().append(day)
-                .append(" - ").append(month + 1).append(" - ").append(year));
+        et_paymentDate.setText(new StringBuilder().append(day)
+                .append(" - ").append(month).append(" - ").append(year));
 
         /*
             TODO Add Validation to make sure :
@@ -345,12 +172,9 @@ public class PGSPaymentFragment extends Fragment{
 
         String[] headers = {"Field", "Value"};
         String[][] data = {
-                {"Repayment Date", et_repaymentDate.getText().toString()},
-                {"Payment Type", sp_paymentType.getSelectedItem().toString()},
-                {"Amount", et_amount.getText().toString()},
-                {"Addition Payment", et_additionalPayment.getText().toString()},
-                {"Fees", et_fees.getText().toString()},
-                {"Total", String.valueOf(calculateTotal())}
+                {"Payment Date", et_paymentDate.getText().toString()},
+                {"Payment Time", et_paymentTime.getText().toString()},
+                {"Amount", et_amount.getText().toString()}
         };
 
         System.out.println(FlipTable.of(headers, data));
@@ -361,15 +185,11 @@ public class PGSPaymentFragment extends Fragment{
                 .append("\n")
                 .append(data[2][0] + " : " + data[2][1])
                 .append("\n")
-                .append(data[3][0] + " : " + data[3][1])
-                .append("\n")
-                .append(data[4][0] + " : " + data[4][1])
-                .append("\n")
-                .append(data[5][0] + " : " + data[5][1]).toString();
+                .append(data[3][0] + " : " + data[3][1]).toString();
 
 
         AlertDialog confirmPaymentDialog = new AlertDialog.Builder(getActivity())
-                .setTitle("Review Payment Details")
+                .setTitle("Confirm Payment?")
                 .setMessage(formReviewString)
                 .setPositiveButton("Pay Now", new DialogInterface.OnClickListener() {
                     @Override
@@ -385,8 +205,6 @@ public class PGSPaymentFragment extends Fragment{
                 })
                 .show();
 
-
-
     }
 
     @OnClick(R.id.bt_cancelPayment)
@@ -397,27 +215,27 @@ public class PGSPaymentFragment extends Fragment{
     public void submitPayment(){
         //TODO Implement a proper builder method here
 
-        String dateString = et_repaymentDate.getEditableText().toString().replace(" - ", " ");
+        String dateString = et_paymentDate.getEditableText().toString().replace(" - ", " ");
 
-        final LoanRepaymentRequest loanRepaymentRequest = new LoanRepaymentRequest();
-        loanRepaymentRequest.setPaymentTypeId(String.valueOf(paymentTypeHashMap.get(sp_paymentType.getSelectedItem().toString())));
-        loanRepaymentRequest.setLocale("en");
-        loanRepaymentRequest.setTransactionAmount(String.valueOf(calculateTotal()));
-        loanRepaymentRequest.setDateFormat("dd MM yyyy");
-        loanRepaymentRequest.setTransactionDate(dateString);
-        String builtRequest = new Gson().toJson(loanRepaymentRequest);
+        final SavingsDepositRequest pgsPaymentRequest = new SavingsDepositRequest();
+        //TODO Decide if agents will handle different payment methods and if so, handle them correctly
+        pgsPaymentRequest.setPaymentTypeId("1");
+        pgsPaymentRequest.setLocale("en");
+        pgsPaymentRequest.setTransactionAmount(et_amount.getText().toString());
+        pgsPaymentRequest.setDateFormat("dd MM yyyy");
+        pgsPaymentRequest.setTransactionDate(dateString);
+        String builtRequest = new Gson().toJson(pgsPaymentRequest);
         Log.i("TAG", builtRequest);
 
         safeUIBlockingUtility.safelyBlockUI();
-        API.loanService.submitPayment(Integer.parseInt(loanAccountNumber),
-                loanRepaymentRequest,
-                new Callback<LoanRepaymentResponse>() {
+        API.savingsAccountService.submitDeposit(Integer.parseInt(pgsAccountNumber),
+                pgsPaymentRequest,
+                new Callback<SavingsDepositResponse>() {
                     @Override
-                    public void success(LoanRepaymentResponse loanRepaymentResponse, Response response) {
+                    public void success(SavingsDepositResponse pgsPaymentResponse, Response response) {
 
-                        if (loanRepaymentResponse != null)
-                        {
-                            Toast.makeText(getActivity(), "Payment Successful, Transaction ID = " + loanRepaymentResponse.getResourceId(),
+                        if (pgsPaymentResponse != null) {
+                            Toast.makeText(getActivity(), "Payment Successful, Transaction ID = " + pgsPaymentResponse.getResourceId(),
                                     Toast.LENGTH_LONG).show();
                         }
                         safeUIBlockingUtility.safelyUnBlockUI();
@@ -426,10 +244,11 @@ public class PGSPaymentFragment extends Fragment{
 
                     @Override
                     public void failure(RetrofitError retrofitError) {
-                        Toast.makeText(getActivity(),"Payment Failed",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "Payment Failed", Toast.LENGTH_SHORT).show();
                         safeUIBlockingUtility.safelyUnBlockUI();
                     }
-                });
+                }
+        );
     }
 }
 

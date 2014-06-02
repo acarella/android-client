@@ -102,8 +102,6 @@ public class PGSAccountTransactionsListAdapter extends BaseAdapter implements Fi
                 FilterResults results = new FilterResults();
 
                 // perform your search here using the searchConstraint String.
-
-
                 for (Transaction transaction : listOfTransactions) {
                     if (transaction.getTransactionType().getValue().contentEquals(constraint)) {
                         filteredListOfTransactions.add(transaction);

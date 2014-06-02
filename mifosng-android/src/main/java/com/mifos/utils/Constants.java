@@ -24,4 +24,6 @@ public class Constants {
     public static final String FEES_DUE = "feesDue";
 
     public static final String SAVINGS_ACCOUNT_NUMBER = "savingsAccountNumber";
+
+    public static final String SAVINGS_PRODUCT_NAME = "savingsProductName";
 }

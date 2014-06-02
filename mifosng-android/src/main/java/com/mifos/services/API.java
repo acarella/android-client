@@ -7,6 +7,8 @@ import com.mifos.objects.accounts.ClientAccounts;
 import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
 import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
+import com.mifos.objects.accounts.savings.SavingsDepositRequest;
+import com.mifos.objects.accounts.savings.SavingsDepositResponse;
 import com.mifos.objects.client.Client;
 import com.mifos.objects.client.Page;
 import com.mifos.objects.db.CollectionSheet;
@@ -141,6 +143,11 @@ public class API {
         public void getSavingsAccountWithAssociations(@Path("savingsAccountId") int savingsAccountId,
                                                       @Query("associations") String association,
                                                       Callback<SavingsAccountWithAssociations> savingsAccountWithAssociationsCallback);
+
+        @POST("savingsaccounts/{accountsId}/transactions?command=deposit")
+        public void submitDeposit(@Path("accountsID") int accountId,
+                                  @Body SavingsDepositRequest SavingsDepositRequest,
+                                  Callback<SavingsDepositResponse> SavingsDeposittResponseCallback);
 
     }
 
