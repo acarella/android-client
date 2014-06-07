@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 import com.jakewharton.fliptables.FlipTable;
 import com.mifos.mifosxdroid.R;
 import com.mifos.objects.accounts.savings.SavingsAccount;
+import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.objects.accounts.savings.SavingsDepositRequest;
 import com.mifos.objects.accounts.savings.SavingsDepositResponse;
 import com.mifos.services.API;
@@ -79,13 +80,13 @@ public class PGSPaymentFragment extends Fragment{
         // Required empty public constructor
     }
 
-    public static PGSPaymentFragment newInstance(SavingsAccount pgsAccount) {
+    public static PGSPaymentFragment newInstance(SavingsAccountWithAssociations pgsAccount) {
         PGSPaymentFragment fragment = new PGSPaymentFragment();
         Bundle args = new Bundle();
         if(pgsAccount != null)
         {
-            //args.putString(Constants.CLIENT_NAME, pgsAccount.getClientName());
-            args.putString(Constants.SAVINGS_PRODUCT_NAME, pgsAccount.getProductName());
+            args.putString(Constants.CLIENT_NAME, pgsAccount.getClientName());
+            args.putString(Constants.SAVINGS_PRODUCT_NAME, pgsAccount.getSavingsProductName());
             args.putString(Constants.SAVINGS_ACCOUNT_NUMBER, pgsAccount.getAccountNo());
             fragment.setArguments(args);
         }
@@ -98,7 +99,7 @@ public class PGSPaymentFragment extends Fragment{
         if (getArguments() != null) {
 
             clientName = getArguments().getString(Constants.CLIENT_NAME);
-            pgsAccountNumber = getArguments().getString(Constants.LOAN_ACCOUNT_NUMBER);
+            pgsAccountNumber = getArguments().getString(Constants.SAVINGS_ACCOUNT_NUMBER);
         }
     }
 
@@ -125,18 +126,12 @@ public class PGSPaymentFragment extends Fragment{
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
     public void inflateUI(){
@@ -183,9 +178,7 @@ public class PGSPaymentFragment extends Fragment{
                 .append("\n")
                 .append(data[1][0] + " : " + data[1][1])
                 .append("\n")
-                .append(data[2][0] + " : " + data[2][1])
-                .append("\n")
-                .append(data[3][0] + " : " + data[3][1]).toString();
+                .append(data[2][0] + " : " + data[2][1]).toString();
 
 
         AlertDialog confirmPaymentDialog = new AlertDialog.Builder(getActivity())
@@ -219,6 +212,7 @@ public class PGSPaymentFragment extends Fragment{
 
         final SavingsDepositRequest pgsPaymentRequest = new SavingsDepositRequest();
         //TODO Decide if agents will handle different payment methods and if so, handle them correctly
+        pgsPaymentRequest.setAccountNumber(pgsAccountNumber);
         pgsPaymentRequest.setPaymentTypeId("1");
         pgsPaymentRequest.setLocale("en");
         pgsPaymentRequest.setTransactionAmount(et_amount.getText().toString());

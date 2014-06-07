@@ -43,20 +43,11 @@ import retrofit.client.Response;
  */
 public class PGSAccountSummaryFragment extends Fragment{
 
-    @InjectView(R.id.tv_clientName)TextView tv_clientName;
-    @InjectView(R.id.quickContactBadge_client) QuickContactBadge quickContactBadge;
-    @InjectView(R.id.tv_savings_product_short_name) TextView tv_savingsProductName;
-    @InjectView(R.id.tv_savingsAccountNumber) TextView tv_savingsAccountNumber;
-    @InjectView(R.id.tv_savings_account_balance) TextView tv_savingsAccountBalance;
-    @InjectView(R.id.tv_total_deposits) TextView tv_totalDeposits;
-    @InjectView(R.id.tv_total_withdrawals) TextView tv_totalWithdrawals;
-    @InjectView(R.id.lv_recent_pgs_transactions) ListView lv_recentPGSTransactions;
-    @InjectView(R.id.bt_pgs_hide_withdrawal) Button bt_hideWithdrawal;
-    @InjectView(R.id.bt_pgs_make_deposit) Button bt_makeDeposit;
-
     private OnFragmentInteractionListener mListener;
 
     private PGSAccountTransactionsListAdapter pgsAccountTransactionsListAdapter;
+
+    private SavingsAccountWithAssociations pgsAccount;
 
     int savingsAccountNumber;
 
@@ -72,6 +63,17 @@ public class PGSAccountSummaryFragment extends Fragment{
 
     Boolean areOnlyDepositsShowing = false;
     List<Transaction> pgsTransactionsList = new ArrayList<Transaction>();
+
+    @InjectView(R.id.tv_clientName)TextView tv_clientName;
+    @InjectView(R.id.quickContactBadge_client) QuickContactBadge quickContactBadge;
+    @InjectView(R.id.tv_savings_product_short_name) TextView tv_savingsProductName;
+    @InjectView(R.id.tv_savingsAccountNumber) TextView tv_savingsAccountNumber;
+    @InjectView(R.id.tv_savings_account_balance) TextView tv_savingsAccountBalance;
+    @InjectView(R.id.tv_total_deposits) TextView tv_totalDeposits;
+    @InjectView(R.id.tv_total_withdrawals) TextView tv_totalWithdrawals;
+    @InjectView(R.id.lv_recent_pgs_transactions) ListView lv_recentPGSTransactions;
+    @InjectView(R.id.bt_pgs_hide_withdrawal) Button bt_hideWithdrawal;
+    @InjectView(R.id.bt_pgs_make_deposit) Button bt_makeDeposit;
 
     public static PGSAccountSummaryFragment newInstance(int savingsAccountNumber) {
         PGSAccountSummaryFragment fragment = new PGSAccountSummaryFragment();
@@ -123,14 +125,6 @@ public class PGSAccountSummaryFragment extends Fragment{
             }
         });
 
-        /*
-        bt_makeDeposit.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                Log.d("Make Deposit", "Make Deposit");
-            }
-        });
-        */
         return rootView;
     }
 
@@ -149,6 +143,8 @@ public class PGSAccountSummaryFragment extends Fragment{
 
                         if(pgsAccountWithAssociations!=null) {
 
+                            pgsAccount = pgsAccountWithAssociations;
+
                             tv_clientName.setText(pgsAccountWithAssociations.getClientName());
                             tv_savingsProductName.setText(pgsAccountWithAssociations.getSavingsProductName());
                             tv_savingsAccountNumber.setText(pgsAccountWithAssociations.getAccountNo());
@@ -164,6 +160,8 @@ public class PGSAccountSummaryFragment extends Fragment{
                                     = new PGSAccountTransactionsListAdapter(getActivity().getApplicationContext(),
                                     pgsAccountWithAssociations.getTransactions());
                             lv_recentPGSTransactions.setAdapter(pgsAccountTransactionsListAdapter);
+
+                            bt_makeDeposit.setEnabled(true);
 
                             safeUIBlockingUtility.safelyUnBlockUI();
 
@@ -202,12 +200,12 @@ public class PGSAccountSummaryFragment extends Fragment{
 
     @OnClick(R.id.bt_pgs_make_deposit)
     public void makeDepositButtonClicked(){
-        mListener.makeDeposit(savingsAccountNumber);
+        mListener.makeDeposit(pgsAccount);
     }
 
     public interface OnFragmentInteractionListener {
 
-        public void makeDeposit(int savingsAccountId);
+        public void makeDeposit(SavingsAccountWithAssociations savingsAccountWithAssociations);
     }
 
 }

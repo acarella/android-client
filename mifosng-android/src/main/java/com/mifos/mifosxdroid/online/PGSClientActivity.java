@@ -13,12 +13,13 @@ import android.view.MenuItem;
 import com.mifos.mifosxdroid.R;
 import com.mifos.objects.accounts.loan.Loan;
 import com.mifos.objects.accounts.savings.SavingsAccount;
+import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.utils.Constants;
 import com.mifos.utils.FragmentConstants;
 
 import butterknife.ButterKnife;
 
-public class PGSClientActivity extends ActionBarActivity implements PGSClientDetailsFragment.OnFragmentInteractionListener,
+public class PGSClientActivity extends ActionBarActivity implements
         PGSAccountSummaryFragment.OnFragmentInteractionListener  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+
     public void loadSavingsAccountSummary(int savingsAccountNumber) {
         SavingsAccountSummaryFragment savingsAccountSummaryFragment
                 = SavingsAccountSummaryFragment.newInstance(savingsAccountNumber);
@@ -61,7 +62,7 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
         fragmentTransaction.replace(R.id.global_container,savingsAccountSummaryFragment).commit();
     }
 
-    @Override
+
     public void PGSAccountSummary(int savingsAccountNumber) {
 
         SavingsAccountSummaryFragment savingsAccountSummaryFragment
@@ -80,14 +81,12 @@ public class PGSClientActivity extends ActionBarActivity implements PGSClientDet
         fragmentTransaction.replace(R.id.global_container, loanRepaymentFragment).commit();
     }
 
-    public void makeDeposit(SavingsAccount savingsAccount) {
-        PGSPaymentFragment pgsPaymentFragment = PGSPaymentFragment.newInstance(savingsAccount);
+    public void makeDeposit(SavingsAccountWithAssociations savingsAccountWithAssociations) {
+        PGSPaymentFragment pgsPaymentFragment = PGSPaymentFragment.newInstance(savingsAccountWithAssociations);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.addToBackStack(FragmentConstants.FRAG_PGS_ACCOUNT_SUMMARY);
         fragmentTransaction.replace(R.id.global_container, pgsPaymentFragment).commit();
     }
 
-    public void makeDeposit(int savingsId) {
-        Log.d("Test", "test");
-    }
+
 }

@@ -144,10 +144,10 @@ public class API {
                                                       @Query("associations") String association,
                                                       Callback<SavingsAccountWithAssociations> savingsAccountWithAssociationsCallback);
 
-        @POST("savingsaccounts/{accountsId}/transactions?command=deposit")
+        @POST("/savingsaccounts/{accountsId}/transactions?command=deposit")
         public void submitDeposit(@Path("accountsID") int accountId,
                                   @Body SavingsDepositRequest SavingsDepositRequest,
-                                  Callback<SavingsDepositResponse> SavingsDeposittResponseCallback);
+                                  Callback<SavingsDepositResponse> SavingsDepositResponseCallback);
 
     }
 

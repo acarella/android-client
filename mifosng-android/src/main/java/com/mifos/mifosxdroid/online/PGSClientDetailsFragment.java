@@ -21,6 +21,7 @@ import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.LoanAccountsListAdapter;
 import com.mifos.mifosxdroid.adapters.SavingsAccountsListAdapter;
 import com.mifos.objects.accounts.ClientAccounts;
+import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.objects.client.Client;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
@@ -157,10 +158,6 @@ public class PGSClientDetailsFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-
-        public void makeDeposit(int savingsAccountNumber);
-        public void loadSavingsAccountSummary(int savingsAccountNumber);
-        public void PGSAccountSummary(int savingsAccountNumber);
 
     }
 
