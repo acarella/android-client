@@ -31,6 +31,7 @@ public class Client {
     private int imageId;
     private boolean imagePresent;
     private String externalId;
+    private int savingsAccountId;
 
     public int getId() {
         return id;
@@ -176,6 +177,11 @@ public class Client {
         this.externalId = externalId;
     }
 
+    public int getSavingsAccountId() { return savingsAccountId;}
+
+    public void setSavingsAccountId(int savingsAccountId) { this.savingsAccountId = savingsAccountId;}
+
+
     public String getFormattedActivationDateAsString()
     {
         //TODO Format Date Based on Current Locale
@@ -214,6 +220,7 @@ public class Client {
                 ", imageId=" + imageId +
                 ", imagePresent=" + imagePresent +
                 ", externalId='" + externalId + '\'' +
+                ", savingsAccountId=" + savingsAccountId +
                 '}';
     }
 }

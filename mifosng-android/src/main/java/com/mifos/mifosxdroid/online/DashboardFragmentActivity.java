@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 
-public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener, ClientListFragment.FragmentChangeListener{
+public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener, PGSClientListFragment.FragmentChangeListener{
 
     public static Context context;
     private ViewPager viewPager;
@@ -55,7 +55,7 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.container_dashboard, new ClientListFragment())
+//                    .add(R.id.container_dashboard, new PGSClientListFragment())
 //                    .commit();
 //        }
 
@@ -94,14 +94,14 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
     public void initTabListener(){
         getSupportActionBar().addTab(getTab("Clients"), 0, true);
-        getSupportActionBar().addTab(getTab("Centers"), 1, false);
+        //getSupportActionBar().addTab(getTab("Centers"), 1, false);
     }
 
     public List<Fragment> getListOfAllFragments(){
 
         List<Fragment> fragmentList = new ArrayList<Fragment>();
-        fragmentList.add(new ClientListFragment());
-        fragmentList.add(new CenterListFragment());
+        fragmentList.add(new PGSClientListFragment());
+        //fragmentList.add(new CenterListFragment());
 
         return fragmentList;
     }

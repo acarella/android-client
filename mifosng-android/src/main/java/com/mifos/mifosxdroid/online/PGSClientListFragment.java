@@ -21,7 +21,9 @@ import com.mifos.objects.client.Client;
 import com.mifos.objects.client.Page;
 import com.mifos.utils.Constants;
 import com.mifos.services.API;
+import com.mifos.utils.SafeUIBlockingUtility;
 
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -32,20 +34,23 @@ import retrofit.client.Response;
 
 
 /**
- * Created by ishankhanna on 09/02/14.
+ * Created by acarella on 06/08/2014
+ * Uses code from ClientListFragment, created by ishankhanna on 09/02/14.
  */
-public class  ClientListFragment extends Fragment {
-
+public class PGSClientListFragment extends Fragment {
 
     @InjectView(R.id.lv_clients) ListView lv_clients;
 
     View rootView;
-
+    SafeUIBlockingUtility safeUIBlockingUtility;
     List<Client> pageItems;
     FragmentChangeListener activityListener;
     private Context context;
 
-    public ClientListFragment() {
+    //TODO Hardcoding this for now, need to change when goes to production
+    private int agentId = 1223;
+
+    public PGSClientListFragment() {
 
     }
 
@@ -57,19 +62,15 @@ public class  ClientListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_client, container, false);
-        ButterKnife.inject(this, rootView);
+        safeUIBlockingUtility = new SafeUIBlockingUtility(PGSClientListFragment.this.getActivity());
 
-        context = getActivity().getApplicationContext();
-        activityListener = (FragmentChangeListener) getActivity();
+        safeUIBlockingUtility.safelyBlockUI();
 
-        setupUI();
-
-        API.clientService.listAllClients(new Callback<Page<Client>>() {
+        API.clientService.listClientsFilteredByFirstName("Marie", new Callback<Page<Client>>() {
             @Override
             public void success(Page<Client> page, Response response) {
                 pageItems = page.getPageItems();
-
+                safeUIBlockingUtility.safelyUnBlockUI();
                 ClientNameListAdapter clientNameListAdapter = new ClientNameListAdapter(context, pageItems);
                 lv_clients.setAdapter(clientNameListAdapter);
                 lv_clients.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -79,8 +80,9 @@ public class  ClientListFragment extends Fragment {
                         /**
                          * PayGoSol version begins to fork here
                          */
-                        Intent pgsClientActivityIntent = new Intent(getActivity(),PGSClientActivity.class);
+                        Intent pgsClientActivityIntent = new Intent(getActivity(), PGSClientActivity.class);
                         pgsClientActivityIntent.putExtra(Constants.CLIENT_ID, pageItems.get(i).getId());
+                        pgsClientActivityIntent.putExtra(Constants.PGS_ACCOUNT_NUMBER, pageItems.get(i).getSavingsAccountId());
                         startActivity(pgsClientActivityIntent);
 
                     }
@@ -90,12 +92,19 @@ public class  ClientListFragment extends Fragment {
             @Override
             public void failure(RetrofitError retrofitError) {
 
-                if(getActivity() != null)
+                if (getActivity() != null)
+                    safeUIBlockingUtility.safelyUnBlockUI();
                     Toast.makeText(getActivity(), "There was some error fetching list.", Toast.LENGTH_SHORT).show();
-
             }
         });
 
+        rootView = inflater.inflate(R.layout.fragment_client, container, false);
+        ButterKnife.inject(this, rootView);
+
+        context = getActivity().getApplicationContext();
+        activityListener = (FragmentChangeListener) getActivity();
+
+        setupUI();
 
         return rootView;
     }
@@ -135,6 +144,13 @@ public class  ClientListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.agent_account:
+                Intent intent = new Intent(getActivity(), PGSClientActivity.class);
+                intent.putExtra(Constants.CLIENT_ID, agentId);
+                intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, 357);
+                startActivity(intent);
+                break;
+
             case R.id.mItem_search:
                 startActivity(new Intent(getActivity(), ClientSearchActivity.class));
                 break;

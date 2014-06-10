@@ -4,12 +4,15 @@ package com.mifos.mifosxdroid.online;
  * Created by antoniocarella on 5/30/14.
  * Uses code from ClientActivity.java
  */
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.mifos.mifosxdroid.GroupActivity;
 import com.mifos.mifosxdroid.R;
 import com.mifos.objects.accounts.loan.Loan;
 import com.mifos.objects.accounts.savings.SavingsAccount;
@@ -21,16 +24,19 @@ import butterknife.ButterKnife;
 
 public class PGSClientActivity extends ActionBarActivity implements
         PGSAccountSummaryFragment.OnFragmentInteractionListener  {
+
+    //TODO Hardcoding this for now, need to change when goes to production
+    private int agentId = 1223;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_global_container_layout);
         ButterKnife.inject(this);
         final int clientId = getIntent().getExtras().getInt(Constants.CLIENT_ID);
+        final int pgsAccountNumber = getIntent().getExtras().getInt(Constants.PGS_ACCOUNT_NUMBER);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        //TODO Find a way to retrieve PayGoSol account from clientID
-        // Currently, this is NOT correct. The clientId is being passed as if it were a savingsID
-        PGSAccountSummaryFragment pgsAccountSummaryFragment = PGSAccountSummaryFragment.newInstance(clientId);
+        PGSAccountSummaryFragment pgsAccountSummaryFragment = PGSAccountSummaryFragment.newInstance(clientId, pgsAccountNumber);
         fragmentTransaction.replace(R.id.global_container, pgsAccountSummaryFragment).commit();
     }
 
@@ -46,39 +52,30 @@ public class PGSClientActivity extends ActionBarActivity implements
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+
+
+        switch (item.getItemId()) {
+            case R.id.agent_account:
+                Intent intent = new Intent(PGSClientActivity.this, PGSClientActivity.class);
+                intent.putExtra(Constants.CLIENT_ID, agentId);
+                intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, 357);
+                startActivity(intent);
+                break;
+
+            case R.id.mItem_search:
+                startActivity(new Intent(PGSClientActivity.this, ClientSearchActivity.class));
+                break;
+
+            case R.id.offline_menu:
+                startActivity(new Intent(PGSClientActivity.this, GroupActivity.class));
+                break;
+
+            default: //DO NOTHING
+                break;
         }
+
         return super.onOptionsItemSelected(item);
-    }
 
-
-    public void loadSavingsAccountSummary(int savingsAccountNumber) {
-        SavingsAccountSummaryFragment savingsAccountSummaryFragment
-                = SavingsAccountSummaryFragment.newInstance(savingsAccountNumber);
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
-        fragmentTransaction.replace(R.id.global_container,savingsAccountSummaryFragment).commit();
-    }
-
-
-    public void PGSAccountSummary(int savingsAccountNumber) {
-
-        SavingsAccountSummaryFragment savingsAccountSummaryFragment
-                = SavingsAccountSummaryFragment.newInstance(savingsAccountNumber);
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
-        fragmentTransaction.replace(R.id.global_container,savingsAccountSummaryFragment).commit();
-
-    }
-
-    public void makeRepayment(Loan loan) {
-
-        LoanRepaymentFragment loanRepaymentFragment = LoanRepaymentFragment.newInstance(loan);
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_LOAN_ACCOUNT_SUMMARY);
-        fragmentTransaction.replace(R.id.global_container, loanRepaymentFragment).commit();
     }
 
     public void makeDeposit(SavingsAccountWithAssociations savingsAccountWithAssociations) {
@@ -87,6 +84,8 @@ public class PGSClientActivity extends ActionBarActivity implements
         fragmentTransaction.addToBackStack(FragmentConstants.FRAG_PGS_ACCOUNT_SUMMARY);
         fragmentTransaction.replace(R.id.global_container, pgsPaymentFragment).commit();
     }
+
+
 
 
 }

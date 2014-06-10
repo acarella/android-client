@@ -42,5 +42,9 @@
     <string name="time">Time</string>
     <string name="amount">Amount</string>
     <string name="submitPayment">Submit Payment</string>
+    <string name="agent_account">Account</string>
+    <string name="from_account">From Account</string>
+    <string name="client_balance">Client Balance</string>
+    <string name="agent_balance">Agent Balance</string>
 
 </resources>

@@ -3,6 +3,7 @@ package com.mifos.mifosxdroid.online;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.jakewharton.fliptables.FlipTable;
 import com.mifos.mifosxdroid.R;
+import com.mifos.objects.accountTransfer.AccountTransferRequest;
+import com.mifos.objects.accountTransfer.AccountTransferResponse;
 import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.objects.accounts.savings.SavingsDepositRequest;
@@ -33,8 +37,10 @@ import com.mifos.services.API;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,16 +69,15 @@ public class PGSPaymentFragment extends Fragment{
 
     ActionBar actionBar;
 
+    String todaysDate;
+
     // Arguments Passed From the Loan Account Summary Fragment
+    int clientID;
     String clientName;
-    String pgsAccountNumber;
+    int pgsAccountNumber;
 
     @InjectView(R.id.tv_clientName) TextView tv_clientName;
-    @InjectView(R.id.et_pgs_payment_date) EditText et_paymentDate;
-    @InjectView(R.id.et_pgs_payment_time) EditText et_paymentTime;
     @InjectView(R.id.et_pgs_payment_amount) EditText et_amount;
-    @InjectView(R.id.bt_paynow) Button bt_paynow;
-    @InjectView(R.id.bt_cancelPayment) Button bt_cancel;
 
     private OnFragmentInteractionListener mListener;
 
@@ -85,9 +90,11 @@ public class PGSPaymentFragment extends Fragment{
         Bundle args = new Bundle();
         if(pgsAccount != null)
         {
+
             args.putString(Constants.CLIENT_NAME, pgsAccount.getClientName());
             args.putString(Constants.SAVINGS_PRODUCT_NAME, pgsAccount.getSavingsProductName());
-            args.putString(Constants.SAVINGS_ACCOUNT_NUMBER, pgsAccount.getAccountNo());
+            args.putInt(Constants.CLIENT_ID, pgsAccount.getClientId());
+            args.putInt(Constants.PGS_ACCOUNT_NUMBER, Integer.parseInt(pgsAccount.getAccountNo()));
             fragment.setArguments(args);
         }
         return fragment;
@@ -98,8 +105,10 @@ public class PGSPaymentFragment extends Fragment{
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
 
+            clientID = getArguments().getInt(Constants.CLIENT_ID);
             clientName = getArguments().getString(Constants.CLIENT_NAME);
-            pgsAccountNumber = getArguments().getString(Constants.SAVINGS_ACCOUNT_NUMBER);
+            pgsAccountNumber = getArguments().getInt(Constants.PGS_ACCOUNT_NUMBER);
+            Log.d("onCreate of PGSPaymentFragment", "" + pgsAccountNumber);
         }
     }
 
@@ -137,39 +146,28 @@ public class PGSPaymentFragment extends Fragment{
     public void inflateUI(){
         tv_clientName.setText(clientName);
         et_amount.setText("0.0");
-        inflatePaymentDate();
     }
 
     public interface OnFragmentInteractionListener {
 
     }
 
-    public void inflatePaymentDate(){
-
-        Calendar calendar = Calendar.getInstance();
-        final int year = calendar.get(Calendar.YEAR);
-        final int month = calendar.get(Calendar.MONTH);
-        final int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        et_paymentDate.setText(new StringBuilder().append(day)
-                .append(" - ").append(month).append(" - ").append(year));
-
-        /*
-            TODO Add Validation to make sure :
-            1. Date Is in Correct Format
-            2. Date Entered is not greater than Date Today i.e Date is not in future
-         */
-
-    }
-
     @OnClick(R.id.bt_paynow)
     public void reviewPaymentDetails(){
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy");
+        todaysDate = sdf.format(new Date());
+        Time now = new Time();
+        now.setToNow();
+
         String[] headers = {"Field", "Value"};
         String[][] data = {
-                {"Payment Date", et_paymentDate.getText().toString()},
-                {"Payment Time", et_paymentTime.getText().toString()},
-                {"Amount", et_amount.getText().toString()}
+                {"Amount", et_amount.getText().toString()},
+                {"From Client", clientName},
+                {"To Agent", "PayGoSol Agent"},
+                {"From agent account", "1"},
+                {"Payment Date", todaysDate},
+                {"Payment Time", now.format("%k:%M:%S")}
         };
 
         System.out.println(FlipTable.of(headers, data));
@@ -178,8 +176,13 @@ public class PGSPaymentFragment extends Fragment{
                 .append("\n")
                 .append(data[1][0] + " : " + data[1][1])
                 .append("\n")
-                .append(data[2][0] + " : " + data[2][1]).toString();
-
+                .append(data[2][0] + " : " + data[2][1])
+                .append("\n")
+                .append(data[3][0] + " : " + data[3][1])
+                .append("\n")
+                .append(data[4][0] + " : " + data[4][1])
+                .append("\n")
+                .append(data[5][0] + " : " + data[5][1]).toString();
 
         AlertDialog confirmPaymentDialog = new AlertDialog.Builder(getActivity())
                 .setTitle("Confirm Payment?")
@@ -206,34 +209,37 @@ public class PGSPaymentFragment extends Fragment{
     }
 
     public void submitPayment(){
-        //TODO Implement a proper builder method here
 
-        String dateString = et_paymentDate.getEditableText().toString().replace(" - ", " ");
+        final AccountTransferRequest accountTransferRequest = new AccountTransferRequest();
+        //TODO These are hardcoded here, need to become dynamic
+        accountTransferRequest.setFromOfficeId(1);
+        accountTransferRequest.setFromClientId(1223);
+        accountTransferRequest.setFromAccountType(2);
+        accountTransferRequest.setFromAccountId(357);
+        accountTransferRequest.setToOfficeId(1);
+        accountTransferRequest.setToClientId(clientID);
+        accountTransferRequest.setToAccountType(2);
+        accountTransferRequest.setToAccountId(pgsAccountNumber);
+        accountTransferRequest.setDateFormat("dd MM yyyy");
+        accountTransferRequest.setLocale("en");
+        accountTransferRequest.setTransferDate(todaysDate);
+        accountTransferRequest.setTransferAmount(et_amount.getText().toString());
+        accountTransferRequest.setTransferDescription("Transfer from PayGoSol Agent #: " +
+                357 + "to client account #: " + pgsAccountNumber);
 
-        final SavingsDepositRequest pgsPaymentRequest = new SavingsDepositRequest();
-        //TODO Decide if agents will handle different payment methods and if so, handle them correctly
-        pgsPaymentRequest.setAccountNumber(pgsAccountNumber);
-        pgsPaymentRequest.setPaymentTypeId("1");
-        pgsPaymentRequest.setLocale("en");
-        pgsPaymentRequest.setTransactionAmount(et_amount.getText().toString());
-        pgsPaymentRequest.setDateFormat("dd MM yyyy");
-        pgsPaymentRequest.setTransactionDate(dateString);
-        String builtRequest = new Gson().toJson(pgsPaymentRequest);
-        Log.i("TAG", builtRequest);
-
-        safeUIBlockingUtility.safelyBlockUI();
-        API.savingsAccountService.submitDeposit(Integer.parseInt(pgsAccountNumber),
-                pgsPaymentRequest,
-                new Callback<SavingsDepositResponse>() {
+        API.accountTransfersService.createTransfer(accountTransferRequest,
+                new Callback<AccountTransferResponse>() {
                     @Override
-                    public void success(SavingsDepositResponse pgsPaymentResponse, Response response) {
-
-                        if (pgsPaymentResponse != null) {
-                            Toast.makeText(getActivity(), "Payment Successful, Transaction ID = " + pgsPaymentResponse.getResourceId(),
+                    public void success(AccountTransferResponse accountTransferResponse, Response response) {
+                        if (accountTransferResponse != null) {
+                            Toast.makeText(getActivity(), "Payment Successful, Transaction ID = " + accountTransferResponse.getResourceId(),
                                     Toast.LENGTH_LONG).show();
                         }
                         safeUIBlockingUtility.safelyUnBlockUI();
-                        getActivity().getSupportFragmentManager().popBackStackImmediate();
+                        Intent intent = new Intent(getActivity(), PGSClientActivity.class);
+                        intent.putExtra(Constants.CLIENT_ID, clientID);
+                        intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, pgsAccountNumber);
+                        startActivity(intent);
                     }
 
                     @Override
@@ -241,8 +247,7 @@ public class PGSPaymentFragment extends Fragment{
                         Toast.makeText(getActivity(), "Payment Failed", Toast.LENGTH_SHORT).show();
                         safeUIBlockingUtility.safelyUnBlockUI();
                     }
-                }
-        );
+                });
     }
 }
 

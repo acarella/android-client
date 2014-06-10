@@ -32,6 +32,7 @@ public class PageItem {
     private int imageId;
     private boolean imagePresent;
     private String externalId;
+    private int savingsAccountId;
 
     public String getFirstname() {
         return firstname;
@@ -177,6 +178,10 @@ public class PageItem {
         this.externalId = externalId;
     }
 
+    public int getSavingsAccountId() { return savingsAccountId;}
+
+    public void setSavingsAccountId(int savingsAccountId) { this.savingsAccountId = savingsAccountId;}
+
     public String getFormattedActivationDateAsString()
     {
         //TODO Format Date Based on Current Locale
@@ -210,7 +215,8 @@ public class PageItem {
                 ", officeName='" + officeName + '\'' +
                 ", imageId=" + imageId +
                 ", imagePresent=" + imagePresent +
-                ", timeline=" + timeline +
+                ", timeline=" + timeline + '\'' +
+                ", savingsAccountId=" + savingsAccountId +
                 '}';
     }
 }

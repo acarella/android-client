@@ -3,9 +3,14 @@ package com.mifos.services;
 import android.util.Log;
 import com.mifos.objects.SearchedEntity;
 import com.mifos.objects.User;
+import com.mifos.objects.accountTransfer.AccountTransferRequest;
+import com.mifos.objects.accountTransfer.AccountTransferResponse;
+import com.mifos.objects.accountTransfer.AccountTransferTemplateRequest;
+import com.mifos.objects.accountTransfer.AccountTransferTemplateResponse;
 import com.mifos.objects.accounts.ClientAccounts;
 import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
 import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
+import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.objects.accounts.savings.SavingsDepositRequest;
 import com.mifos.objects.accounts.savings.SavingsDepositResponse;
@@ -90,6 +95,8 @@ public class API {
         @GET("/clients/{clientId}/accounts")
         public void getAllAccountsOfClient(@Path("clientId") int clientId, Callback<ClientAccounts> callback);
 
+        @GET("/clients/{clientId}/accounts")
+        public void getClientsAccountsByType(@Path("clientId") int clientId, @Query("fields") String accountsType, Callback<ClientAccounts> callback);
     }
 
     public static ClientAccountsService clientAccountsService = restAdapter.create(ClientAccountsService.class);
@@ -101,6 +108,9 @@ public class API {
 
         @GET("/clients/{clientId}")
         public void getClient(@Path("clientId") int clientId, Callback<Client> callback);
+
+        @GET("/clients")
+        public void listClientsFilteredByFirstName(@Query("firstName") String firstName, Callback<Page<Client>> callback);
 
     }
 
@@ -145,9 +155,23 @@ public class API {
                                                       Callback<SavingsAccountWithAssociations> savingsAccountWithAssociationsCallback);
 
         @POST("/savingsaccounts/{accountsId}/transactions?command=deposit")
-        public void submitDeposit(@Path("accountsID") int accountId,
+        public void submitDeposit(@Path("accountsId") int accountId,
                                   @Body SavingsDepositRequest SavingsDepositRequest,
                                   Callback<SavingsDepositResponse> SavingsDepositResponseCallback);
+
+    }
+
+    public static AccountTransfersService accountTransfersService = restAdapter.create(AccountTransfersService.class);
+
+    public interface AccountTransfersService{
+
+        @GET("/template")
+        public void retrieveTemplate(@Body AccountTransferTemplateRequest accountTransferTemplateRequest,
+                                     Callback<AccountTransferTemplateResponse> callback);
+
+        @POST("/accounttransfers")
+        public void createTransfer(@Body AccountTransferRequest accountTransferRequest,
+                                   Callback<AccountTransferResponse> callback);
 
     }
 

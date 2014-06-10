@@ -1,6 +1,7 @@
 package com.mifos.mifosxdroid.online;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,10 +19,10 @@ import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mifos.mifosxdroid.GroupActivity;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.PGSAccountTransactionsListAdapter;
-import com.mifos.mifosxdroid.adapters.SavingsAccountTransactionsListAdapter;
-import com.mifos.objects.accounts.savings.SavingsAccount;
+import com.mifos.objects.accounts.ClientAccounts;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.objects.accounts.savings.Transaction;
 import com.mifos.services.API;
@@ -43,13 +45,16 @@ import retrofit.client.Response;
  */
 public class PGSAccountSummaryFragment extends Fragment{
 
+    //TODO Hardcoding this for now, need to change when goes to production
+    private int agentId = 1223;
+
     private OnFragmentInteractionListener mListener;
 
     private PGSAccountTransactionsListAdapter pgsAccountTransactionsListAdapter;
 
     private SavingsAccountWithAssociations pgsAccount;
 
-    int savingsAccountNumber;
+    int pgsAccountNumber;
 
     View rootView;
 
@@ -66,7 +71,7 @@ public class PGSAccountSummaryFragment extends Fragment{
 
     @InjectView(R.id.tv_clientName)TextView tv_clientName;
     @InjectView(R.id.quickContactBadge_client) QuickContactBadge quickContactBadge;
-    @InjectView(R.id.tv_savings_product_short_name) TextView tv_savingsProductName;
+    @InjectView(R.id.tv_savings_product_short_name) TextView tv_savingsProductShortName;
     @InjectView(R.id.tv_savingsAccountNumber) TextView tv_savingsAccountNumber;
     @InjectView(R.id.tv_savings_account_balance) TextView tv_savingsAccountBalance;
     @InjectView(R.id.tv_total_deposits) TextView tv_totalDeposits;
@@ -75,10 +80,11 @@ public class PGSAccountSummaryFragment extends Fragment{
     @InjectView(R.id.bt_pgs_hide_withdrawal) Button bt_hideWithdrawal;
     @InjectView(R.id.bt_pgs_make_deposit) Button bt_makeDeposit;
 
-    public static PGSAccountSummaryFragment newInstance(int savingsAccountNumber) {
+    public static PGSAccountSummaryFragment newInstance(int clientId, int pgsAccountNumber) {
         PGSAccountSummaryFragment fragment = new PGSAccountSummaryFragment();
         Bundle args = new Bundle();
-        args.putInt(Constants.SAVINGS_ACCOUNT_NUMBER, savingsAccountNumber);
+        args.putInt(Constants.CLIENT_ID, clientId);
+        args.putInt(Constants.PGS_ACCOUNT_NUMBER, pgsAccountNumber);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,22 +96,23 @@ public class PGSAccountSummaryFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            savingsAccountNumber = getArguments().getInt(Constants.SAVINGS_ACCOUNT_NUMBER);
+            safeUIBlockingUtility = new SafeUIBlockingUtility(PGSAccountSummaryFragment.this.getActivity());
+            pgsAccountNumber = getArguments().getInt(Constants.PGS_ACCOUNT_NUMBER);
+            inflateSavingsAccountSummary();
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_pgs_account_summary, container, false);
         activity = (ActionBarActivity) getActivity();
-        safeUIBlockingUtility = new SafeUIBlockingUtility(PGSAccountSummaryFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         actionBar = activity.getSupportActionBar();
+        actionBar.setTitle(getResources().getString(R.string.pgsAccountSummary));
         ButterKnife.inject(this, rootView);
-
-        inflateSavingsAccountSummary();
 
         bt_hideWithdrawal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,12 +138,10 @@ public class PGSAccountSummaryFragment extends Fragment{
     public void inflateSavingsAccountSummary(){
 
         safeUIBlockingUtility.safelyBlockUI();
-
-        actionBar.setTitle(getResources().getString(R.string.pgsAccountSummary));
         /**
          * This Method will hits end point ?associations=transactions
          */
-        API.savingsAccountService.getSavingsAccountWithAssociations(savingsAccountNumber,
+        API.savingsAccountService.getSavingsAccountWithAssociations(pgsAccountNumber,
                 "transactions", new Callback<SavingsAccountWithAssociations>() {
                     @Override
                     public void success(SavingsAccountWithAssociations pgsAccountWithAssociations, Response response) {
@@ -146,7 +151,8 @@ public class PGSAccountSummaryFragment extends Fragment{
                             pgsAccount = pgsAccountWithAssociations;
 
                             tv_clientName.setText(pgsAccountWithAssociations.getClientName());
-                            tv_savingsProductName.setText(pgsAccountWithAssociations.getSavingsProductName());
+                            //Commenting this out and setting it manually in the xml file for
+                            //tv_savingsProductName.setText(pgsAccountWithAssociations.getSavingsProductName());
                             tv_savingsAccountNumber.setText(pgsAccountWithAssociations.getAccountNo());
                             tv_savingsAccountBalance.setText(String.valueOf(pgsAccountWithAssociations.getSummary().getAccountBalance()));
                             tv_totalDeposits.setText(String.valueOf(pgsAccountWithAssociations.getSummary().getTotalDeposits()));
@@ -171,7 +177,7 @@ public class PGSAccountSummaryFragment extends Fragment{
                     @Override
                     public void failure(RetrofitError retrofitError) {
 
-                        Log.i(getActivity().getLocalClassName(), retrofitError.getLocalizedMessage());
+                        //Log.i(getActivity().getLocalClassName(), retrofitError.getLocalizedMessage());
 
                         Toast.makeText(activity, "PayGoSol Account not found.", Toast.LENGTH_SHORT).show();
                         safeUIBlockingUtility.safelyUnBlockUI();
@@ -206,6 +212,28 @@ public class PGSAccountSummaryFragment extends Fragment{
     public interface OnFragmentInteractionListener {
 
         public void makeDeposit(SavingsAccountWithAssociations savingsAccountWithAssociations);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.agent_account:
+                Intent intent = new Intent(getActivity(), PGSClientActivity.class);
+                intent.putExtra(Constants.CLIENT_ID, agentId);
+                intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, 357);
+                startActivity(intent);
+                break;
+
+            case R.id.offline_menu:
+                startActivity(new Intent(getActivity(), GroupActivity.class));
+                break;
+
+            default: //DO NOTHING
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }

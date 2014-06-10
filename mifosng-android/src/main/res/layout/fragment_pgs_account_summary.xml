@@ -54,7 +54,7 @@
             android:layout_weight="0.6"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Product Name"
+            android:text="PayGoSol Account Number"
             android:id="@+id/tv_savings_product_short_name" />
 
         <TextView

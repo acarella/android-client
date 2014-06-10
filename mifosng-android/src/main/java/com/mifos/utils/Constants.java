@@ -13,6 +13,8 @@ public class Constants {
 
     public static final String CLIENT_ID = "clientId";
 
+    public static final String AGENT_ID = "agentId";
+
     public static final String LOAN_ACCOUNT_NUMBER = "loanAccountNumber";
 
     public static final String LOAN_PRODUCT_NAME = "loanProductName";
@@ -26,4 +28,7 @@ public class Constants {
     public static final String SAVINGS_ACCOUNT_NUMBER = "savingsAccountNumber";
 
     public static final String SAVINGS_PRODUCT_NAME = "savingsProductName";
+
+    public static final String PGS_ACCOUNT_NUMBER = "pgsAccountNumber";
+
 }

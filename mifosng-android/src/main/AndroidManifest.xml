@@ -47,7 +47,11 @@
         <!-- PayGoSol activities -->
         <activity
             android:name="com.mifos.mifosxdroid.online.PGSClientActivity"
-            android:label="PGSClientActivity" />
+            android:label="PGSClientActivity">
+            <meta-data
+        android:name="android.support.PARENT_ACTIVITY"
+        android:value="com.mifos.mifosxdroid.online.DashboardFragmentActivity" />
+        </activity>
         <!-- end PayGoSol activities -->
         
         <meta-data
