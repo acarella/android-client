@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.mifos.mifosxdroid.R;
 import com.mifos.objects.accounts.savings.Transaction;
-import com.mifos.utils.ListToDateConverter;
+import com.mifos.utils.DateHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +70,7 @@ public class PGSAccountTransactionsListAdapter extends BaseAdapter implements Fi
         }
 
         reusableViewHolder.tv_transactionDate.setText(
-                ListToDateConverter.getDateAsString(listOfTransactions.get(i).getDate()));
+                DateHelper.getDateAsString(listOfTransactions.get(i).getDate()));
         reusableViewHolder.tv_transactionType.setText(listOfTransactions.get(i).getTransactionType().getValue());
         reusableViewHolder.tv_transactionAmount.setText(listOfTransactions.get(i).getCurrency().getDisplaySymbol()
                 +" "+String.valueOf(listOfTransactions.get(i).getAmount()));

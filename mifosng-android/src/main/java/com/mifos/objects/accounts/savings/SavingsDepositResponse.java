@@ -1,7 +1,7 @@
 package com.mifos.objects.accounts.savings;
 
 import com.google.gson.annotations.Expose;
-import com.mifos.objects.accounts.loan.Changes;
+import com.mifos.objects.Changes;
 
 /**
  * Created by antoniocarella on 6/1/14.

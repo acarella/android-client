@@ -52,8 +52,6 @@
 
     <string name="default_instance_url">https://developer.openmf.org/mifosng-provider/api/v1</string>
     <string name="review_transaction">Review Transaction</string>
-    <string name="amount">Amount</string>
-    <string name="date">Date</string>
     <string name="payment_type">Payment Type</string>
     <string name="logout">Logout</string>
     <string name="action_save_location">Save location</string>
