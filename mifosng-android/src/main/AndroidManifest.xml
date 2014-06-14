@@ -10,6 +10,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:name="com.orm.SugarApp"
         android:allowBackup="false"
@@ -28,6 +29,9 @@
         <activity
             android:name="com.mifos.mifosxdroid.LoginActivity"
             android:label="Login" />
+        <activity
+            android:name="com.mifos.mifosxdroid.online.LogoutActivity"
+            android:label="@string/logout" />
         <activity
             android:name="com.mifos.mifosxdroid.online.DashboardFragmentActivity"
             android:label="Dashboard" >
@@ -63,6 +67,8 @@
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name="com.mifos.mifosxdroid.online.ClientActivity"

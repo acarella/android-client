@@ -1,6 +1,9 @@
 package com.mifos.services;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
 import com.mifos.objects.SearchedEntity;
 import com.mifos.objects.User;
 import com.mifos.objects.accountTransfer.AccountTransferRequest;
@@ -11,48 +14,100 @@ import com.mifos.objects.accounts.ClientAccounts;
 import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
 import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
 import com.mifos.objects.accounts.savings.SavingsAccount;
+import com.mifos.objects.accounts.savings.SavingsAccountTransactionRequest;
+import com.mifos.objects.accounts.savings.SavingsAccountTransactionResponse;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.objects.accounts.savings.SavingsDepositRequest;
 import com.mifos.objects.accounts.savings.SavingsDepositResponse;
 import com.mifos.objects.client.Client;
 import com.mifos.objects.client.Page;
 import com.mifos.objects.db.CollectionSheet;
+import com.mifos.objects.accounts.loan.Loan;
 import com.mifos.objects.templates.loans.LoanRepaymentTemplate;
-import com.mifos.services.data.Payload;
+import com.mifos.objects.templates.savings.SavingsAccountTransactionTemplate;
 import com.mifos.services.data.CollectionSheetPayload;
+import com.mifos.services.data.GpsCoordinatesRequest;
+import com.mifos.services.data.GpsCoordinatesResponse;
+import com.mifos.services.data.Payload;
 import com.mifos.services.data.SaveResponse;
-import retrofit.*;
-import retrofit.client.Response;
-import retrofit.http.*;
+import com.mifos.utils.Constants;
 
 import java.util.Iterator;
 import java.util.List;
 
+import retrofit.*;
+import retrofit.client.Response;
+import retrofit.http.*;
+import retrofit.mime.TypedFile;
+
 public class API {
 
     //This instance has more Data for Testing
-    public static String url = "https://demo.openmf.org/mifosng-provider/api/v1";
+    public static String mInstanceUrl = "https://developer.openmf.org/mifosng-provider/api/v1";
 
-    //public static String url = "https://demo2.openmf.org/mifosng-provider/api/v1";
-    static RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(url)
-            .setRequestInterceptor(new RequestInterceptor() {
-                @Override
-                public void intercept(RequestFacade request) {
-                    request.addHeader("Accept", "application/json");
-                    request.addHeader("Content-Type", "application/json");
-                    request.addHeader("X-Mifos-Platform-TenantId", "default");
-                    request.addHeader("Authorization", "Basic bWlmb3M6cGFzc3dvcmQ=");
-                }
-            })
-            .setErrorHandler(new MifosRestErrorHandler())
-            .build();
+    public static final String ACCEPT_JSON = "Accept: application/json";
+    public static final String CONTENT_TYPE_JSON = "Content-Type: application/json";
+
+    //public static String mInstanceUrl = "https://demo2.openmf.org/mifosng-provider/api/v1";
+
+    static RestAdapter sRestAdapter;
+    public static CenterService centerService;
+    public static ClientAccountsService clientAccountsService;
+    public static ClientService clientService;
+    public static LoanService loanService;
+    public static SavingsAccountService savingsAccountService;
+    public static SearchService searchService;
+    public static UserAuthService userAuthService;
+    // TODO: this service is not done yet!
+    public static GpsCoordinatesService gpsCoordinatesService;
 
     static {
-        restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
-
+        init();
     }
 
-     static class MifosRestErrorHandler implements ErrorHandler {
+    private static synchronized void init() {
+        sRestAdapter = createRestAdapter(getInstanceUrl());
+        centerService = sRestAdapter.create(CenterService.class);
+        clientAccountsService = sRestAdapter.create(ClientAccountsService.class);
+        clientService = sRestAdapter.create(ClientService.class);
+        loanService = sRestAdapter.create(LoanService.class);
+        savingsAccountService = sRestAdapter.create(SavingsAccountService.class);
+        searchService = sRestAdapter.create(SearchService.class);
+        userAuthService = sRestAdapter.create(UserAuthService.class);
+        gpsCoordinatesService = sRestAdapter.create(GpsCoordinatesService.class);
+    }
+
+    private static RestAdapter createRestAdapter(final String url) {
+        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(url)
+                .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(RequestFacade request) {
+                        if (url.contains("developer")) {
+                            request.addHeader("X-Mifos-Platform-TenantId", "developer");
+                        } else {
+                            request.addHeader("X-Mifos-Platform-TenantId", "default");
+                        }
+
+                        //                    request.addHeader("Authorization", "Basic VXNlcjE6dGVjaDRtZg==");
+
+                        SharedPreferences pref = PreferenceManager
+                                .getDefaultSharedPreferences(Constants.applicationContext);
+                        String authToken = pref.getString(User.AUTHENTICATION_KEY, "NA");
+
+                        if (authToken != null && !"NA".equals(authToken)) {
+                            request.addHeader("Authorization", authToken);
+                        }
+
+                    }
+                })
+                .setErrorHandler(new MifosRestErrorHandler())
+                .build();
+        // TODO: This logging is sometimes excessive, e.g. for client image requests.
+        restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
+        return restAdapter;
+    }
+
+    static class MifosRestErrorHandler implements ErrorHandler {
         @Override
         public Throwable handleError(RetrofitError retrofitError) {
 
@@ -79,19 +134,23 @@ public class API {
 
     public interface CenterService {
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/centers")
         public void getAllCenters(Callback<List<com.mifos.objects.Center>> callback);
-        @POST("/centers/2?command=generateCollectionSheet")
+
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
+        @POST("/centers/2026?command=generateCollectionSheet")
         public void getCenter(@Body Payload payload, Callback<CollectionSheet> callback);
-        @POST("/centers/2?command=saveCollectionSheet")
+
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
+        @POST("/centers/2026?command=saveCollectionSheet")
         public SaveResponse saveCollectionSheet(@Body CollectionSheetPayload collectionSheetPayload);
+
     }
-
-
-    public static CenterService centerService = restAdapter.create(CenterService.class);
 
     public interface ClientAccountsService {
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/clients/{clientId}/accounts")
         public void getAllAccountsOfClient(@Path("clientId") int clientId, Callback<ClientAccounts> callback);
 
@@ -99,40 +158,54 @@ public class API {
         public void getClientsAccountsByType(@Path("clientId") int clientId, @Query("fields") String accountsType, Callback<ClientAccounts> callback);
     }
 
-    public static ClientAccountsService clientAccountsService = restAdapter.create(ClientAccountsService.class);
-
     public interface ClientService {
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/clients")
         public void listAllClients(Callback<Page<Client>> callback);
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/clients/{clientId}")
         public void getClient(@Path("clientId") int clientId, Callback<Client> callback);
+
+        @Multipart
+        @POST("/clients/{clientId}/images")
+        public void uploadClientImage(@Path("clientId") int clientId,
+                                      @Part("file") TypedFile file,
+                                      Callback<Response> callback);
+
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
+        @DELETE("/clients/{clientId}/images")
+        void deleteClientImage(@Path("clientId") int clientId, Callback<Response> callback);
+
+        @Headers({"Accept: application/octet-stream", CONTENT_TYPE_JSON})
+        @GET("/clients/{clientId}/images")
+        public void getClientImage(@Path("clientId") int clientId, Callback<TypedFile> callback);
 
         @GET("/clients")
         public void listClientsFilteredByFirstName(@Query("firstName") String firstName, Callback<Page<Client>> callback);
 
     }
 
-    public static ClientService clientService = restAdapter.create(ClientService.class);
-
     public interface SearchService {
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/search?resource=clients")
         public void searchClientsByName(@Query("query") String clientName, Callback<List<SearchedEntity>> callback);
 
-
     }
 
-    public static LoanService loanService = restAdapter.create(LoanService.class);
     public interface LoanService {
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/loans/{loanId}")
-        public void getLoanById(@Path("loanId") int loanId, Callback<com.mifos.objects.accounts.loan.Loan> callback);
+        public void getLoanById(@Path("loanId") int loanId, Callback<Loan> callback);
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/loans/{loanId}/transactions/template?command=repayment")
         public void getLoanRepaymentTemplate(@Path("loanId") int loanId, Callback<LoanRepaymentTemplate> callback);
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @POST("/loans/{loanId}/transactions?command=repayment")
         public void submitPayment(@Path("loanId") int loanId,
                                   @Body LoanRepaymentRequest loanRepaymentRequest,
@@ -140,7 +213,6 @@ public class API {
 
     }
 
-    public static SavingsAccountService savingsAccountService = restAdapter.create(SavingsAccountService.class);
     public interface SavingsAccountService {
 
         /**
@@ -148,43 +220,56 @@ public class API {
          * @param savingsAccountId - savingsAccountId for which information is requested
          * @param association - Mention Type of Association Needed, Like :- all, transactions etc.
          * @param savingsAccountWithAssociationsCallback - callback to receive the response
+         *
+         * Use this method to retrieve the Savings Account With Associations
          */
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/savingsaccounts/{savingsAccountId}")
         public void getSavingsAccountWithAssociations(@Path("savingsAccountId") int savingsAccountId,
                                                       @Query("associations") String association,
                                                       Callback<SavingsAccountWithAssociations> savingsAccountWithAssociationsCallback);
 
-        @POST("/savingsaccounts/{accountsId}/transactions?command=deposit")
-        public void submitDeposit(@Path("accountsId") int accountId,
-                                  @Body SavingsDepositRequest SavingsDepositRequest,
-                                  Callback<SavingsDepositResponse> SavingsDepositResponseCallback);
+        /**
+         *
+         * @param savingsAccountId - savingsAccountId for which information is requested
+         * @param savingsAccountTransactionTemplateCallback - Savings Account Transaction Template Callback
+         *
+         * Use this method to retrieve the Savings Account Transaction Template
+         */
+
+        @GET("/savingsaccounts/{savingsAccountId}/transactions/template")
+        public void getSavingsAccountTransactionTemplate(@Path("savingsAccountId") int savingsAccountId, Callback<SavingsAccountTransactionTemplate> savingsAccountTransactionTemplateCallback);
+
+        @POST("/savingsaccounts/{savingsAccountId}/transactions")
+        public void processTransaction(@Path("savingsAccountId") int savingsAccountId,
+                                              @Query("command") String transactionType,
+                                              @Body SavingsAccountTransactionRequest savingsAccountTransactionRequest,
+                                              Callback<SavingsAccountTransactionResponse> savingsAccountTransactionResponseCallback);
 
     }
-
-    public static AccountTransfersService accountTransfersService = restAdapter.create(AccountTransfersService.class);
-
-    public interface AccountTransfersService{
-
-        @GET("/template")
-        public void retrieveTemplate(@Body AccountTransferTemplateRequest accountTransferTemplateRequest,
-                                     Callback<AccountTransferTemplateResponse> callback);
-
-        @POST("/accounttransfers")
-        public void createTransfer(@Body AccountTransferRequest accountTransferRequest,
-                                   Callback<AccountTransferResponse> callback);
-
-    }
-
-    public static SearchService searchService = restAdapter.create(SearchService.class);
 
     public interface UserAuthService {
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @POST("/authentication")
         public void authenticate(@Query("username") String username, @Query("password") String password, Callback<User> userCallback);
+
     }
 
-    public static UserAuthService userAuthService = restAdapter.create(UserAuthService.class);
+    /**
+     * Service for getting and retrieving GPS coordinates for a client's location, stored
+     * in a custom data table.
+     * TODOs:
+     * getGpsCoordinates needs to be added.
+     * setGpsCoordinates is not working yet - currently there is something wrong with the formatting of the request.
+     */
+    public interface GpsCoordinatesService {
 
+        @POST("/datatables/gps_coordinates/{clientId}?genericResultSet=true")
+        public void setGpsCoordinates(@Path("clientId") int clientId,
+                                      @Body GpsCoordinatesRequest coordinates,
+                                      Callback<GpsCoordinatesResponse> callback);
+    }
 
     public static <T> Callback<T> getCallback(T t) {
         Callback<T> cb = new Callback<T>() {
@@ -217,5 +302,13 @@ public class API {
 
         return cb;
     }
-}
 
+    public static synchronized void setInstanceUrl(String url) {
+        mInstanceUrl = url;
+        init();
+    }
+
+    public static synchronized String getInstanceUrl() {
+        return mInstanceUrl;
+    }
+}

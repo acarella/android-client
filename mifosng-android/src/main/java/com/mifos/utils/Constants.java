@@ -31,4 +31,10 @@ public class Constants {
 
     public static final String PGS_ACCOUNT_NUMBER = "pgsAccountNumber";
 
+
+    public static final String SAVINGS_ACCOUNT_TRANSACTION_TYPE = "transactionType";
+
+    public static final String SAVINGS_ACCOUNT_TRANSACTION_DEPOSIT = "Deposit";
+
+    public static final String SAVINGS_ACCOUNT_TRANSACTION_WITHDRAWAL = "Withdrawal";
 }

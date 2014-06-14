@@ -2,7 +2,6 @@ package com.mifos.mifosxdroid.online;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -12,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
@@ -26,6 +26,7 @@ import com.mifos.utils.SafeUIBlockingUtility;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -41,6 +42,8 @@ public class SavingsAccountSummaryFragment extends Fragment {
     @InjectView(R.id.tv_total_deposits) TextView tv_totalDeposits;
     @InjectView(R.id.tv_total_withdrawals) TextView tv_totalWithdrawals;
     @InjectView(R.id.lv_last_five_savings_transactions) ListView lv_lastFiveTransactions;
+    @InjectView(R.id.bt_deposit) Button bt_deposit;
+    @InjectView(R.id.bt_withdrawal) Button bt_withdrawal;
 
     private OnFragmentInteractionListener mListener;
 
@@ -56,6 +59,7 @@ public class SavingsAccountSummaryFragment extends Fragment {
 
     ActionBar actionBar;
 
+    SavingsAccountWithAssociations savingsAccountWithAssociations;
     public static SavingsAccountSummaryFragment newInstance(int savingsAccountNumber) {
         SavingsAccountSummaryFragment fragment = new SavingsAccountSummaryFragment();
         Bundle args = new Bundle();
@@ -97,7 +101,7 @@ public class SavingsAccountSummaryFragment extends Fragment {
 
         actionBar.setTitle(getResources().getString(R.string.savingsAccountSummary));
         /**
-         * This Method will hits end point ?associations=transactions
+         * This Method will hit end point ?associations=transactions
          */
         API.savingsAccountService.getSavingsAccountWithAssociations(savingsAccountNumber,
                 "transactions", new Callback<SavingsAccountWithAssociations>() {
@@ -105,6 +109,8 @@ public class SavingsAccountSummaryFragment extends Fragment {
                     public void success(SavingsAccountWithAssociations savingsAccountWithAssociations, Response response) {
 
                         if(savingsAccountWithAssociations!=null) {
+
+                            SavingsAccountSummaryFragment.this.savingsAccountWithAssociations = savingsAccountWithAssociations;
 
                             tv_clientName.setText(savingsAccountWithAssociations.getClientName());
                             tv_savingsProductName.setText(savingsAccountWithAssociations.getSavingsProductName());
@@ -154,10 +160,20 @@ public class SavingsAccountSummaryFragment extends Fragment {
     }
 
 
+    @OnClick(R.id.bt_deposit)
+    public void onDepositButtonClicked() {
+        mListener.makeDeposit(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_DEPOSIT);
+    }
+
+    @OnClick(R.id.bt_withdrawal)
+    public void onWithdrawalButtonClicked() {
+        mListener.makeDeposit(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_WITHDRAWAL);
+    }
+
     public interface OnFragmentInteractionListener {
 
-        public void makeDeposit();
-        public void makeWithdrawal();
+        public void makeDeposit(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType);
+        public void makeWithdrawal(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType);
     }
 
 }

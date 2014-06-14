@@ -2,6 +2,7 @@
 package com.mifos.objects.accounts.loan;
 
 import com.google.gson.annotations.Expose;
+import com.mifos.objects.Changes;
 
 public class LoanRepaymentResponse {
 

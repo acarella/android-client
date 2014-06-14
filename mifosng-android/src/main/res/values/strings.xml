@@ -47,4 +47,14 @@
     <string name="client_balance">Client Balance</string>
     <string name="agent_balance">Agent Balance</string>
 
+
+    <string name="confirm_delete_client_image">Are you sure you want to delete this client\'s image?</string>
+
+    <string name="default_instance_url">https://developer.openmf.org/mifosng-provider/api/v1</string>
+    <string name="review_transaction">Review Transaction</string>
+    <string name="amount">Amount</string>
+    <string name="date">Date</string>
+    <string name="payment_type">Payment Type</string>
+    <string name="logout">Logout</string>
+    <string name="action_save_location">Save location</string>
 </resources>

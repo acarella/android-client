@@ -1,10 +1,13 @@
 
 package com.mifos.objects.accounts.savings;
 
+import com.mifos.objects.Currency;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
