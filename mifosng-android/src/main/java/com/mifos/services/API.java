@@ -58,6 +58,7 @@ public class API {
     public static SavingsAccountService savingsAccountService;
     public static SearchService searchService;
     public static UserAuthService userAuthService;
+    public static AccountTransfersService accountTransfersService;
     // TODO: this service is not done yet!
     public static GpsCoordinatesService gpsCoordinatesService;
 
@@ -229,22 +230,30 @@ public class API {
                                                       @Query("associations") String association,
                                                       Callback<SavingsAccountWithAssociations> savingsAccountWithAssociationsCallback);
 
-        /**
-         *
-         * @param savingsAccountId - savingsAccountId for which information is requested
-         * @param savingsAccountTransactionTemplateCallback - Savings Account Transaction Template Callback
-         *
-         * Use this method to retrieve the Savings Account Transaction Template
-         */
-
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/savingsaccounts/{savingsAccountId}/transactions/template")
         public void getSavingsAccountTransactionTemplate(@Path("savingsAccountId") int savingsAccountId, Callback<SavingsAccountTransactionTemplate> savingsAccountTransactionTemplateCallback);
 
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @POST("/savingsaccounts/{savingsAccountId}/transactions")
         public void processTransaction(@Path("savingsAccountId") int savingsAccountId,
                                               @Query("command") String transactionType,
                                               @Body SavingsAccountTransactionRequest savingsAccountTransactionRequest,
                                               Callback<SavingsAccountTransactionResponse> savingsAccountTransactionResponseCallback);
+
+    }
+
+    public interface AccountTransfersService{
+
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
+        @GET("/template")
+        public void retrieveTemplate(@Body AccountTransferTemplateRequest accountTransferTemplateRequest,
+                                     Callback<AccountTransferTemplateResponse> callback);
+
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
+        @POST("/accounttransfers")
+        public void createTransfer(@Body AccountTransferRequest accountTransferRequest,
+                                   Callback<AccountTransferResponse> callback);
 
     }
 

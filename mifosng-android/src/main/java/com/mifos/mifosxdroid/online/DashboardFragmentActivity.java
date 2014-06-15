@@ -122,7 +122,7 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
+        //Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
 
         switch (item.getItemId()) {
             case R.id.offline:

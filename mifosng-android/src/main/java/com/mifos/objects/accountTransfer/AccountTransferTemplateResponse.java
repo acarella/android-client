@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.mifos.objects.Office;
 import com.mifos.objects.accounts.Account;
 import com.mifos.objects.accounts.AccountType;
-import com.mifos.objects.accounts.Currency;
+import com.mifos.objects.Currency;
 import com.mifos.objects.client.Client;
 
 import java.util.ArrayList;
