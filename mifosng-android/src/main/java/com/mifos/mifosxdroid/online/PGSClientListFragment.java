@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,7 +25,8 @@ import com.mifos.utils.Constants;
 import com.mifos.services.API;
 import com.mifos.utils.SafeUIBlockingUtility;
 
-import java.util.Iterator;
+import org.apache.http.HttpStatus;
+
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -65,7 +67,7 @@ public class PGSClientListFragment extends Fragment {
                              Bundle savedInstanceState) {
         safeUIBlockingUtility = new SafeUIBlockingUtility(PGSClientListFragment.this.getActivity());
 
-        safeUIBlockingUtility.safelyBlockUI();
+        context = getActivity().getApplicationContext();
 
         API.clientService.listClientsFilteredByFirstName("Marie", new Callback<Page<Client>>() {
             @Override
@@ -93,9 +95,21 @@ public class PGSClientListFragment extends Fragment {
             @Override
             public void failure(RetrofitError retrofitError) {
 
-                if (getActivity() != null)
-                    safeUIBlockingUtility.safelyUnBlockUI();
-                    Toast.makeText(getActivity(), "There was some error fetching list.", Toast.LENGTH_SHORT).show();
+                if(getActivity() != null) {
+                    Log.i("Error", ""+retrofitError.getResponse().getStatus());
+                    if(retrofitError.getResponse().getStatus() == HttpStatus.SC_UNAUTHORIZED) {
+                        Toast.makeText(getActivity(), "Authorization Expired - Please Login Again", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(getActivity(), LogoutActivity.class));
+                        getActivity().finish();
+
+                    }else {
+                        Toast.makeText(getActivity(), "There was some error fetching list.", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+
+
             }
         });
 

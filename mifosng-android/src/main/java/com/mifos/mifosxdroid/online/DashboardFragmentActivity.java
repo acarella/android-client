@@ -23,8 +23,8 @@ import java.util.List;
  */
 
 
-public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener, PGSClientListFragment.FragmentChangeListener{
-
+public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener{
+    public final static String TAG = DashboardFragmentActivity.class.getSimpleName();
     public static Context context;
     private ViewPager viewPager;
     private FragmentAdapter fragmentAdapter;
@@ -57,26 +57,6 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
         viewPager.setOffscreenPageLimit(0);
 
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.container_dashboard, new PGSClientListFragment())
-//                    .commit();
-//        }
-
-
-    }
-
-    @Override
-    public void replaceFragments(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack
-        transaction.replace(R.id.vp_dashboard, fragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
     }
 
     @Override
@@ -122,7 +102,7 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
+        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
 
         switch (item.getItemId()) {
             case R.id.offline:

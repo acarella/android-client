@@ -200,12 +200,14 @@ public class API {
         @GET("/clients/{clientId}/images")
         public void getClientImage(@Path("clientId") int clientId, Callback<TypedFile> callback);
 
+<<<<<<< HEAD
+        @GET("/clients")
+        public void listClientsFilteredByFirstName(@Query("firstName") String firstName, Callback<Page<Client>> callback);
+=======
         @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/datatables?apptable=m_client")
         public void getDatatablesOfClient(Callback<List<DataTable>> callback);
-
-        @GET("/clients")
-        public void listClientsFilteredByFirstName(@Query("firstName") String firstName, Callback<Page<Client>> callback);
+>>>>>>> upstream/master
 
     }
 
@@ -251,6 +253,8 @@ public class API {
                                                       @Query("associations") String association,
                                                       Callback<SavingsAccountWithAssociations> savingsAccountWithAssociationsCallback);
 
+<<<<<<< HEAD
+=======
         /**
          *
          * @param savingsAccountId - savingsAccountId for which information is requested
@@ -258,6 +262,7 @@ public class API {
          *
          * Use this method to retrieve the Savings Account Transaction Template
          */
+>>>>>>> upstream/master
         @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/savingsaccounts/{savingsAccountId}/transactions/template")
         public void getSavingsAccountTransactionTemplate(@Path("savingsAccountId") int savingsAccountId, Callback<SavingsAccountTransactionTemplate> savingsAccountTransactionTemplateCallback);
@@ -271,6 +276,7 @@ public class API {
 
     }
 
+<<<<<<< HEAD
     public interface AccountTransfersService{
 
         @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
@@ -284,11 +290,12 @@ public class API {
                                    Callback<AccountTransferResponse> callback);
 
     }
-
+=======
     /**
      * Service for authenticating users.
      * No other service can be used without authentication.
      */
+>>>>>>> upstream/master
 
     public interface UserAuthService {
 
