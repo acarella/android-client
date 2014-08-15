@@ -39,16 +39,16 @@
 
         <activity android:name="com.mifos.mifosxdroid.online.ClientSearchActivity" />
         <activity
-            android:name="com.mifos.mifosxdroid.GroupActivity"
-            android:configChanges="orientation|screenSize" />
-        <activity
             android:name="com.mifos.mifosxdroid.ClientActivity"
-            android:configChanges="orientation|screenSize" />
-        <activity
-            android:name="com.mifos.mifosxdroid.LoanActivity"
             android:configChanges="orientation|screenSize" />
 
         <!-- PayGoSol activities -->
+        <activity
+            android:name="com.mifos.mifosxdroid.online.PGSAgentLoginActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".online.CreateClientActivity"
+            android:configChanges="orientation|screenSize" />
         <activity
             android:name="com.mifos.mifosxdroid.online.PGSClientActivity"
             android:label="PGSClientActivity">
@@ -74,15 +74,6 @@
             android:name="com.mifos.mifosxdroid.online.ClientActivity"
             android:label="@string/title_activity_client" >
         </activity>
-        <service
-                android:name="com.mifos.services.RepaymentTransactionSyncService"
-                android:exported="false"
-                >
-            <intent-filter>
-                <action
-                        android:name="com.mifos.services.RepaymentTransactionSyncService"/>
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>

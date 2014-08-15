@@ -7,15 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mifos.mifosxdroid.R;
-import com.mifos.objects.accounts.loan.Loan;
 import com.mifos.utils.FragmentConstants;
 
 import butterknife.ButterKnife;
 
 
-public class ClientSearchActivity extends ActionBarActivity implements LoanAccountSummaryFragment.OnFragmentInteractionListener,
-                                                                       ClientDetailsFragment.OnFragmentInteractionListener,
-                                                                       LoanRepaymentFragment.OnFragmentInteractionListener{
+public class ClientSearchActivity extends ActionBarActivity implements ClientDetailsFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +44,6 @@ public class ClientSearchActivity extends ActionBarActivity implements LoanAccou
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void loadLoanAccountSummary(int loanAccountNumber) {
-
-        LoanAccountSummaryFragment loanAccountSummaryFragment = LoanAccountSummaryFragment.newInstance(loanAccountNumber);
-        FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
-        fragmentTransaction.replace(R.id.search_activity_container,loanAccountSummaryFragment).commit();
-
-
-    }
 
     @Override
     public void loadSavingsAccountSummary(int savingsAccountNumber) {
@@ -69,8 +56,4 @@ public class ClientSearchActivity extends ActionBarActivity implements LoanAccou
 
     }
 
-    @Override
-    public void makeRepayment(Loan loan) {
-
-    }
 }

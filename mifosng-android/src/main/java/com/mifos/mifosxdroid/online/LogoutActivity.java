@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.mifos.mifosxdroid.SplashScreenActivity;
 import com.mifos.objects.User;
+import com.mifos.utils.Constants;
 
 /**
  * Logout activity.
@@ -28,6 +29,7 @@ public class LogoutActivity extends ActionBarActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(User.AUTHENTICATION_KEY, "NA");
+        editor.putInt(Constants.CLIENT_ID, 0);
         editor.commit();
         editor.apply();
         startActivity(new Intent(LogoutActivity.this, SplashScreenActivity.class));

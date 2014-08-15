@@ -41,7 +41,7 @@
         android:hint="Password"
         android:imeOptions="actionDone"
         android:imeActionLabel="@string/login"
-        android:nextFocusDown="@+id/bt_login"
+        android:nextFocusDown="@+id/bt_agent_login"
         android:layout_below="@+id/tv_title_password"
         android:layout_alignLeft="@+id/tv_title_password"
         android:layout_alignStart="@+id/tv_title_password"
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login"
-        android:id="@+id/bt_login"
+        android:id="@+id/bt_agent_login"
         android:layout_below="@+id/et_password"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="39dp" />

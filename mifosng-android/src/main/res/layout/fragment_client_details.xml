@@ -27,16 +27,6 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/iv_clientImage" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="24dp"
-        android:text="PPI - 2.45"
-        android:id="@+id/tv_dummyText"
-        android:layout_below="@+id/tv_fullName"
-        android:layout_toRightOf="@+id/iv_clientImage" />
-
     <TableLayout
         android:id="@+id/tbl_clientDetails"
         android:layout_width="wrap_content"
@@ -73,17 +63,6 @@
             >
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="External ID:"
-                android:id="@+id/tvs_externalId" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/tv_externalId" />
         </TableRow>
 
         <TableRow
@@ -111,17 +90,6 @@
             >
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Office:"
-                android:id="@+id/tvs_office" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/tv_office" />
         </TableRow>
 
         <TableRow
@@ -130,17 +98,6 @@
             >
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Group:"
-                android:id="@+id/tvs_group" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/tv_group" />
         </TableRow>
 
         <TableRow
@@ -149,17 +106,6 @@
             >
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Loan Officer:"
-                android:id="@+id/tvs_loanOfficer" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/tv_loanOfficer" />
         </TableRow>
 
         <TableRow
@@ -168,51 +114,16 @@
             >
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Loan Cycle:"
-                android:id="@+id/tvs_loanCycle" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/tv_loanCycle" />
         </TableRow>
 
     </TableLayout>
-
-    <TextView
-        android:id="@+id/tv_toggle_loan_accounts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tbl_clientDetails"
-        android:text="@string/loanAccounts"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:layout_alignParentStart="true"/>
-
-    <TextView
-        android:id="@+id/tv_count_loan_accounts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:text="00"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignBaseline="@id/tv_toggle_loan_accounts"
-        />
 
     <View
         android:id="@+id/line1"
         android:layout_width="wrap_content"
         android:layout_height="2dp"
         android:background="@color/black"
-        android:layout_below="@+id/tv_toggle_loan_accounts"
+        android:layout_below="@+id/tbl_clientDetails"
         />
 
     <ListView
@@ -228,7 +139,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lv_accounts_loans"
-        android:text="@string/savingAccounts"
+        android:text="@string/Accounts"
         android:textStyle="bold"
         android:textSize="16sp"
         android:layout_marginTop="4dp"

@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.mifos.mifosxdroid.GroupActivity;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.FragmentAdapter;
 
@@ -23,8 +22,8 @@ import java.util.List;
  */
 
 
-public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener, PGSClientListFragment.FragmentChangeListener{
-
+public class DashboardFragmentActivity extends ActionBarActivity implements ActionBar.TabListener{
+    public final static String TAG = DashboardFragmentActivity.class.getSimpleName();
     public static Context context;
     private ViewPager viewPager;
     private FragmentAdapter fragmentAdapter;
@@ -57,26 +56,6 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
         viewPager.setOffscreenPageLimit(0);
 
-//        if (savedInstanceState == null) {
-//            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.container_dashboard, new PGSClientListFragment())
-//                    .commit();
-//        }
-
-
-    }
-
-    @Override
-    public void replaceFragments(Fragment fragment) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this fragment,
-        // and add the transaction to the back stack
-        transaction.replace(R.id.vp_dashboard, fragment);
-        transaction.addToBackStack(null);
-
-        // Commit the transaction
-        transaction.commit();
     }
 
     @Override
@@ -98,15 +77,12 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
     public void initTabListener(){
         getSupportActionBar().addTab(getTab("Clients"), 0, true);
-        //getSupportActionBar().addTab(getTab("Centers"), 1, false);
     }
 
     public List<Fragment> getListOfAllFragments(){
 
         List<Fragment> fragmentList = new ArrayList<Fragment>();
         fragmentList.add(new PGSClientListFragment());
-        //fragmentList.add(new CenterListFragment());
-
         return fragmentList;
     }
 
@@ -122,12 +98,9 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
+        Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
 
         switch (item.getItemId()) {
-            case R.id.offline:
-                startActivity(new Intent(this, GroupActivity.class));
-                break;
             case R.id.logout:
                 startActivity(new Intent(DashboardFragmentActivity.this, LogoutActivity.class));
                 break;

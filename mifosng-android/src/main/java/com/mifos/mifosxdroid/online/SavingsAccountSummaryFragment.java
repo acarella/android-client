@@ -9,6 +9,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -42,12 +45,16 @@ public class SavingsAccountSummaryFragment extends Fragment {
     @InjectView(R.id.tv_total_deposits) TextView tv_totalDeposits;
     @InjectView(R.id.tv_total_withdrawals) TextView tv_totalWithdrawals;
     @InjectView(R.id.lv_last_five_savings_transactions) ListView lv_lastFiveTransactions;
-    @InjectView(R.id.bt_deposit) Button bt_deposit;
-    @InjectView(R.id.bt_withdrawal) Button bt_withdrawal;
+    @InjectView(R.id.bt_transfer) Button bt_transfer;
+
 
     private OnFragmentInteractionListener mListener;
 
     int savingsAccountNumber;
+
+    /**
+     * Static Variables for Inflation of Menu and Submenus
+     */
 
     View rootView;
 
@@ -83,7 +90,7 @@ public class SavingsAccountSummaryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_savings_account_summary, container, false);
+        rootView = inflater.inflate(R.layout.fragment_pgs_savings_account_summary, container, false);
         activity = (ActionBarActivity) getActivity();
         safeUIBlockingUtility = new SafeUIBlockingUtility(SavingsAccountSummaryFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -91,15 +98,15 @@ public class SavingsAccountSummaryFragment extends Fragment {
         ButterKnife.inject(this, rootView);
 
         inflateSavingsAccountSummary();
-
+        setHasOptionsMenu(true);
         return rootView;
     }
 
     public void inflateSavingsAccountSummary(){
 
-        safeUIBlockingUtility.safelyBlockUI();
+        safeUIBlockingUtility.safelyBlockUI("Retrieving account information.","Please wait");
 
-        actionBar.setTitle(getResources().getString(R.string.savingsAccountSummary));
+        actionBar.setTitle(getResources().getString(R.string.accountSummary));
         /**
          * This Method will hit end point ?associations=transactions
          */
@@ -120,9 +127,7 @@ public class SavingsAccountSummaryFragment extends Fragment {
                             tv_totalWithdrawals.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalWithdrawals()));
 
                             SavingsAccountTransactionsListAdapter savingsAccountTransactionsListAdapter
-                                    = new SavingsAccountTransactionsListAdapter(getActivity().getApplicationContext(),
-                                    savingsAccountWithAssociations.getTransactions().size()<5?
-                                            savingsAccountWithAssociations.getTransactions():savingsAccountWithAssociations.getTransactions().subList(0,5));
+                                    = new SavingsAccountTransactionsListAdapter(getActivity().getApplicationContext(), savingsAccountWithAssociations.getTransactions());
                             lv_lastFiveTransactions.setAdapter(savingsAccountTransactionsListAdapter);
 
                             safeUIBlockingUtility.safelyUnBlockUI();
@@ -160,20 +165,37 @@ public class SavingsAccountSummaryFragment extends Fragment {
     }
 
 
-    @OnClick(R.id.bt_deposit)
-    public void onDepositButtonClicked() {
-        mListener.makeDeposit(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_DEPOSIT);
-    }
-
-    @OnClick(R.id.bt_withdrawal)
+    @OnClick(R.id.bt_transfer)
     public void onWithdrawalButtonClicked() {
-        mListener.makeDeposit(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_WITHDRAWAL);
+        mListener.makeTransfer(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_WITHDRAWAL);
     }
 
     public interface OnFragmentInteractionListener {
 
         public void makeDeposit(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType);
         public void makeWithdrawal(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType);
+        public void makeTransfer(SavingsAccountWithAssociations savingsAccountWithAssociations1, String transactionType);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.transfer, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch (item.getItemId()) {
+            case R.id.transfer:
+                mListener.makeTransfer(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_TRANSFER);
+                return true;
+            default: //DO NOTHING
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

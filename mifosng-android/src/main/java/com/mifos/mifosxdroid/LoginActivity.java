@@ -16,9 +16,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mifos.exceptions.ShortOfLengthException;
-import com.mifos.mifosxdroid.online.DashboardFragmentActivity;
+import com.mifos.mifosxdroid.online.ClientActivity;
 import com.mifos.objects.User;
 import com.mifos.services.API;
+import com.mifos.utils.Constants;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -43,13 +44,14 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
     @InjectView(R.id.et_instanceURL) EditText et_instanceURL;
     @InjectView(R.id.et_username) EditText et_username;
     @InjectView(R.id.et_password) EditText et_password;
-    @InjectView(R.id.bt_login) Button bt_login;
+    @InjectView(R.id.bt_agent_login) Button bt_login;
 
     private String username;
     private String instanceURL;
     private String password;
     private Context context;
     private String authenticationToken;
+    private int userId;
     private ProgressDialog progressDialog;
     private String tag = getClass().getSimpleName();
     @Override
@@ -63,6 +65,7 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
         String previouslyEnteredUrl = sharedPreferences.getString(INSTANCE_URL_KEY,
                 getString(R.string.default_instance_url));
         authenticationToken = sharedPreferences.getString(User.AUTHENTICATION_KEY, "NA");
+
 
         ButterKnife.inject(this);
         setupUI();
@@ -102,7 +105,6 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
             throw new ShortOfLengthException("Instance URL", 5);
         }
 
-
         username = et_username.getEditableText().toString();
         if (username.length() < 5) {
             throw new ShortOfLengthException("Username", 5);
@@ -121,7 +123,10 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
         progressDialog.dismiss();
         Toast.makeText(context, "Welcome " + user.getUsername(), Toast.LENGTH_SHORT).show();
         saveAuthenticationKey("Basic " + user.getBase64EncodedAuthenticationKey());
-        Intent intent = new Intent(LoginActivity.this, DashboardFragmentActivity.class);
+        //PGS foks here
+        saveUserId(user.getUserId());
+        Intent intent = new Intent(LoginActivity.this, ClientActivity.class);
+        intent.putExtra(Constants.CLIENT_ID, user.getUserId());
         startActivity(intent);
         finish();
     }
@@ -132,7 +137,7 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
         Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show();
     }
 
-    @OnClick(R.id.bt_login)
+    @OnClick(R.id.bt_agent_login)
     public void onLoginClick(Button button){
         login();
     }
@@ -171,6 +176,13 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
         editor.apply();
     }
 
+    public void saveUserId(int userId) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(Constants.CLIENT_ID, userId);
+        editor.commit();
+        editor.apply();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.offline_menu, menu);
@@ -181,9 +193,6 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(tag, "onOptionsItemSelected: " + item.getItemId());
         switch (item.getItemId()) {
-            case R.id.offline:
-                startActivity(new Intent(this, GroupActivity.class));
-                break;
 
             default: //DO NOTHING
                 break;

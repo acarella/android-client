@@ -22,6 +22,10 @@ public class SafeUIBlockingUtility {
 
     private Context context;
 
+    public void safelyBlockUI(){
+        progressDialog.show();
+    }
+
     public SafeUIBlockingUtility(Context context){
         this.context = context;
         progressDialog = new ProgressDialog(context);
@@ -32,7 +36,14 @@ public class SafeUIBlockingUtility {
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
 
-    public void safelyBlockUI(){
+    public void safelyBlockUI(String uniqueMessage, String uniqueTitle){
+
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(uniqueMessage);
+        progressDialog.setCancelable(false);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setTitle(uniqueTitle);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show();
     }
 

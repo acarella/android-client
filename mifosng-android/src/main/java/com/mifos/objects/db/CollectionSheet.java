@@ -37,16 +37,7 @@ public class CollectionSheet extends SugarRecord<CollectionSheet> {
                     attendanceType.setClient(client);
                     attendanceType.save();
 
-                    List<Loan> loans = client.getLoans();
-                    for (Loan loan : loans) {
-                        loan.setClient(client);
-                        loan.setIsPaymentChanged("no");
-                        loan.save();
 
-                        Currency currency = loan.getCurrency();
-                        currency.setLoan(loan);
-                        currency.save();
-                    }
                 }
             }
         }

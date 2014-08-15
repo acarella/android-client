@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mifos.mifosxdroid.online.DashboardFragmentActivity;
+import com.mifos.mifosxdroid.online.ClientActivity;
 import com.mifos.objects.User;
 import com.mifos.utils.Constants;
 
@@ -24,7 +24,7 @@ public class SplashScreenActivity extends ActionBarActivity {
 
     SharedPreferences sharedPreferences;
     String authenticationToken;
-
+    int userId;
     Context context;
 
     @Override
@@ -44,7 +44,9 @@ public class SplashScreenActivity extends ActionBarActivity {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         authenticationToken = sharedPreferences.getString(User.AUTHENTICATION_KEY, "NA");
-
+        //TODO This is hardcoded, needs to become dynamic
+        //userId = sharedPreferences.getInt(Constants.CLIENT_ID, 0);
+        userId = 1223;
         /**
          * Authentication Token is checked,
          * if NA(Not Available) User will have to login
@@ -54,9 +56,10 @@ public class SplashScreenActivity extends ActionBarActivity {
             //if authentication key is not present
             startActivity(new Intent(SplashScreenActivity.this, LoginActivity.class));
         } else {
-
             //if authentication key is present open dashboard
-            startActivity(new Intent(SplashScreenActivity.this, DashboardFragmentActivity.class));
+            Intent intent = new Intent(SplashScreenActivity.this, ClientActivity.class);
+            intent.putExtra(Constants.CLIENT_ID, userId);
+            startActivity(intent);
         }
 
         finish();
