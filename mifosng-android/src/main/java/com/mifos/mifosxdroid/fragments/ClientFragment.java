@@ -1,10 +1,8 @@
 package com.mifos.mifosxdroid.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,20 +14,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.mifos.mifosxdroid.LoanActivity;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.ClientListAdapter;
 import com.mifos.objects.db.Client;
-import com.mifos.objects.db.Loan;
-import com.mifos.objects.db.RepaymentTransaction;
 import com.orm.query.Condition;
 import com.orm.query.Select;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,7 +47,6 @@ public class ClientFragment extends Fragment implements AdapterView.OnItemClickL
         setHasOptionsMenu(true);
         groupId = getArguments().getLong("group_id", 0);
         setAdapter();
-        calculateTotalDueAmount();
         return view;
     }
 
@@ -69,8 +60,6 @@ public class ClientFragment extends Fragment implements AdapterView.OnItemClickL
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
             hideKeyboard();
-            updateTotalDue();
-            saveUpdatedLoanToDB();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -81,30 +70,6 @@ public class ClientFragment extends Fragment implements AdapterView.OnItemClickL
         imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
     }
 
-    private void saveUpdatedLoanToDB() {
-        Map<Loan, Integer> mapDue = adapter.getUpdatedDueList();
-
-        Set<Loan> loans = mapDue.keySet();
-        for(Loan loan : loans) {
-            int updatedDue = mapDue.get(loan);
-            new RepaymentTransaction(loan, updatedDue).save();
-        }
-    }
-
-    private void updateTotalDue() {
-        Map<Loan, Integer> mapDue = adapter.getUpdatedDueList();
-
-        int totalAmountDue = 0;
-
-        Set<Loan> loans = mapDue.keySet();
-
-        for (Loan loan : loans) {
-            totalAmountDue += mapDue.get(loan);
-        }
-
-        tv_total_amt_paid.setText(String.valueOf(totalAmountDue));
-    }
-
     private void setAdapter() {
         clientsInTheGroup = Select.from(Client.class).where(Condition.prop("mifos_group").eq(groupId)).list();
         if (adapter == null)
@@ -113,30 +78,8 @@ public class ClientFragment extends Fragment implements AdapterView.OnItemClickL
         lv_clients.setOnItemClickListener(this);
     }
 
-    private void calculateTotalDueAmount() {
-        int totalAmountDue = 0;
-
-        final Map<Loan, Integer> listPaidAmount = new LinkedHashMap<Loan, Integer>();
-
-        List<Loan> loans = Select.from(Loan.class).list();
-        for (Loan loan : loans) {
-            if (loan.getClient().getMifosGroup().getId() == groupId) {
-                listPaidAmount.put(loan, loan.chargesDue);
-                totalAmountDue += loan.chargesDue;
-            }
-        }
-        tv_total_amt_paid.setText(String.valueOf(totalAmountDue));
-        adapter.setPaidAmount(listPaidAmount);
-        adapter.notifyDataSetChanged();
-    }
-
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        final int clientId = clientsInTheGroup.get(i).getClientId();
-        Log.i(tag, "onItemClick:-clientId:" + clientId);
 
-        Intent intent = new Intent(getActivity(), LoanActivity.class);
-        intent.putExtra("clientId", clientId);
-        startActivity(intent);
     }
 }

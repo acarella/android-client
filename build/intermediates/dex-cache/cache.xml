@@ -2,6 +2,12 @@
 <pre-dex-items>
 
     <item
+        dex="/Users/antoniocarella/git/android_mifos/android-client/mifosng-android/build/intermediates/pre-dexed/debug/bcprov-jdk15on-151-73a6db1badb51057203e067f6ffaf264cd749c51.jar"
+        jar="/Users/antoniocarella/git/android_mifos/android-client/mifosng-android/libs/bcprov-jdk15on-151.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="9ab8afcc2842d5ef06eb775a0a2b12783b99aa80"/>
+    <item
         dex="/Users/antoniocarella/git/android_mifos/android-client/mifosng-android/build/intermediates/pre-dexed/debug/classes-4b0561854c5e24b6c1b1672d832302479bce33e2.jar"
         jar="/Users/antoniocarella/git/android_mifos/android-client/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
         jumboMode="false"

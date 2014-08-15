@@ -13,7 +13,11 @@ public class Constants {
 
     public static final String CLIENT_ID = "clientId";
 
+    public static final String MIFOS_CLIENT_ID = "mifosClientId";
+
     public static final String AGENT_ID = "agentId";
+
+    public static final String OFFICE_ID = "officeId";
 
     public static final String LOAN_ACCOUNT_NUMBER = "loanAccountNumber";
 
@@ -38,8 +42,17 @@ public class Constants {
 
     public static final String SAVINGS_ACCOUNT_TRANSACTION_WITHDRAWAL = "Withdrawal";
 
+<<<<<<< HEAD
     public static final String DATA_TABLE_REGISTERED_NAME = "dataTableRegisteredName";
 
+=======
+    public static final String SAVINGS_ACCOUNT_TRANSACTION_TRANSFER = "transfer";
+
+    public static final String DATA_TABLE_REGISTERED_NAME = "dataTableRegisteredName";
+
+    public static final String DID_USE_WORKAROUND = "didUseWorkAround";
+
+>>>>>>> demo
     /**
      * Variables to identify which Data Tables have to be shown
      */

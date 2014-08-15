@@ -32,6 +32,8 @@ public class Client {
     private boolean imagePresent;
     private String externalId;
     private int savingsAccountId;
+    private int mifosClientId;
+
 
     public int getId() {
         return id;
@@ -39,6 +41,14 @@ public class Client {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getMifosClientId() {
+        return mifosClientId;
+    }
+
+    public void setMifosClientId(int mifosClientId) {
+        this.mifosClientId = mifosClientId;
     }
 
     public String getAccountNo() {
@@ -192,12 +202,18 @@ public class Client {
          * DD
          */
 
-        Calendar calendar = Calendar.getInstance();
-        // Note, java.util.Calendar month is zero-indexed.
-        calendar.set(activationDate.get(0),activationDate.get(1)-1,activationDate.get(2));
+        if (activationDate.size() > 0) {
 
-        DateFormat dateFormat = DateFormat.getDateInstance();
-        return dateFormat.format(calendar.getTime()).toString();
+            Calendar calendar = Calendar.getInstance();
+            // Note, java.util.Calendar month is zero-indexed.
+            //noinspection ResourceType
+            calendar.set(activationDate.get(0), activationDate.get(1) - 1, activationDate.get(2));
+
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            return dateFormat.format(calendar.getTime()).toString();
+        }
+
+        return "Activation Date not set.";
 
     }
     @Override
@@ -222,6 +238,7 @@ public class Client {
                 ", imagePresent=" + imagePresent +
                 ", externalId='" + externalId + '\'' +
                 ", savingsAccountId=" + savingsAccountId +
+                ", mifosClientId=" + mifosClientId +
                 '}';
     }
 }

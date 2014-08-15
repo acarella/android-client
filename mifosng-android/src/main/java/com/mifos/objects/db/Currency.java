@@ -12,15 +12,6 @@ public class Currency extends SugarRecord<Currency>
     private String displaySymbol;
     private String nameCode;
     private String displayLabel;
-    private Loan loan;
-
-    public Loan getLoan() {
-        return loan;
-    }
-
-    public void setLoan(Loan loan) {
-        this.loan = loan;
-    }
 
     public String getDisplayLabel()
     {

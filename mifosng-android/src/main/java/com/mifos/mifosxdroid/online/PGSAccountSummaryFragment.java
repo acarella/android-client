@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,10 +18,8 @@ import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mifos.mifosxdroid.GroupActivity;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.PGSAccountTransactionsListAdapter;
-import com.mifos.objects.accounts.ClientAccounts;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.objects.accounts.savings.Transaction;
 import com.mifos.services.API;
@@ -223,10 +220,6 @@ public class PGSAccountSummaryFragment extends Fragment{
                 intent.putExtra(Constants.CLIENT_ID, agentId);
                 intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, 357);
                 startActivity(intent);
-                break;
-
-            case R.id.offline_menu:
-                startActivity(new Intent(getActivity(), GroupActivity.class));
                 break;
 
             default: //DO NOTHING

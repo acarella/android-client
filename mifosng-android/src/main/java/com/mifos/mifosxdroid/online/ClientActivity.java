@@ -1,5 +1,6 @@
 package com.mifos.mifosxdroid.online;
 
+import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
 import android.os.Bundle;
@@ -16,7 +17,6 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.mifos.mifosxdroid.R;
-import com.mifos.objects.accounts.loan.Loan;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.services.API;
 import com.mifos.services.data.GpsCoordinatesRequest;
@@ -35,9 +35,8 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class ClientActivity extends ActionBarActivity implements ClientDetailsFragment.OnFragmentInteractionListener,
-                                                                 LoanAccountSummaryFragment.OnFragmentInteractionListener,
-                                                                 LoanRepaymentFragment.OnFragmentInteractionListener,
                                                                  SavingsAccountSummaryFragment.OnFragmentInteractionListener,
+                                                                 AccountTransferFragment.OnFragmentInteractionListener,
                                                                  GooglePlayServicesClient.ConnectionCallbacks,
                                                                  GooglePlayServicesClient.OnConnectionFailedListener {
     /**
@@ -45,7 +44,13 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
      */
 
     private static final int MENU_ITEM_SAVE_LOCATION = 1000;
+<<<<<<< HEAD
     private static final int MENU_ITEM_DATA_TABLES = 1001;
+=======
+    private static final int MENU_ITEM_NEW_CLIENT = 1001;
+    private static final int MENU_ITEM_DATA_TABLES = 1002;
+    private static final int MENU_ITEM_LOGOUT = 1003;
+>>>>>>> demo
 
     /**
      * Control Menu Changes from Fragments
@@ -72,6 +77,7 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
     // True if play services are available and location services are connected.
     private AtomicBoolean locationAvailable = new AtomicBoolean(false);
     private int clientId;
+    private int mifosClientId;
 
     //TODO Try to shorten the code, this activity contains too much of repeated code
     //Implement DRY - Don't Repeat Yourself Approach Here
@@ -81,9 +87,12 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_global_container_layout);
         ButterKnife.inject(this);
+        //TODO figure out login activity for PayGoSol agent so this doesn't need to be hardcoded
+        clientId = 1223;
+        boolean workaround = getIntent().getBooleanExtra(Constants.DID_USE_WORKAROUND, false);
         clientId = getIntent().getExtras().getInt(Constants.CLIENT_ID);
         FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
-        ClientDetailsFragment clientDetailsFragment = ClientDetailsFragment.newInstance(clientId);
+        ClientDetailsFragment clientDetailsFragment = ClientDetailsFragment.newInstance(clientId, workaround);
         fragmentTransaction.replace(R.id.global_container, clientDetailsFragment).commit();
 
         // Initialize location client only if play services are available.
@@ -140,6 +149,12 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
             // This is a static menu item that will be added on the first position
             menu.add(Menu.NONE,MENU_ITEM_SAVE_LOCATION,Menu.NONE, "Save Location");
 
+<<<<<<< HEAD
+=======
+            // This is a static menu item that will be added on the second position
+            menu.add(Menu.NONE,MENU_ITEM_NEW_CLIENT,Menu.NONE, "New Client");
+
+>>>>>>> demo
             // If the client request fetched data tables this will be true
             if(shouldAddDataTables)
             {
@@ -157,7 +172,11 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
                     int SUBMENU_ITEM_ID = 0;
 
                     // Create a Sub Menu that holds a link to all data tables
+<<<<<<< HEAD
                     SubMenu dataTableSubMenu = menu.getItem(1).getSubMenu();
+=======
+                    SubMenu dataTableSubMenu = menu.getItem(2).getSubMenu();
+>>>>>>> demo
                     Iterator<String> stringIterator = clientDataTableMenuItems.iterator();
                     while(stringIterator.hasNext())
                     {
@@ -169,6 +188,12 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
                 shouldAddDataTables = Boolean.FALSE;
             }
             didMenuDataChange = Boolean.FALSE;
+<<<<<<< HEAD
+=======
+
+            // This is a static menu item that will be added on the second position
+            menu.add(Menu.NONE,MENU_ITEM_LOGOUT,Menu.NONE, "LogOut");
+>>>>>>> demo
         }
 
         return super.onPrepareOptionsMenu(menu);
@@ -213,6 +238,19 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
             return true;
         }
 
+<<<<<<< HEAD
+=======
+        if (id == MENU_ITEM_NEW_CLIENT){
+            Intent intent = new Intent(ClientActivity.this, PGSAgentLoginActivity.class);
+            startActivity(intent);
+        }
+
+        if (id == MENU_ITEM_LOGOUT){
+            Intent intent = new Intent(ClientActivity.this, LogoutActivity.class);
+            startActivity(intent);
+        }
+
+>>>>>>> demo
         if(id >= 0 && id < clientDataTableMenuItems.size())
         {
             loadDataTableFragment(id);
@@ -222,6 +260,7 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
     }
 
     public void loadDataTableFragment(int dataTablePostionInTheList) {
+<<<<<<< HEAD
 
         //TODO Add a detailed implementation
 
@@ -241,15 +280,22 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
 
     @Override
     public void loadLoanAccountSummary(int loanAccountNumber) {
+=======
+>>>>>>> demo
 
-        LoanAccountSummaryFragment loanAccountSummaryFragment
-                = LoanAccountSummaryFragment.newInstance(loanAccountNumber);
-        FragmentTransaction fragmentTransaction =  getSupportFragmentManager().beginTransaction();
+        //TODO Add a detailed implementation
+
+        DataTableFragment dataTableFragment = DataTableFragment.newInstance(ClientDetailsFragment.clientDataTables.get(dataTablePostionInTheList));
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
-        fragmentTransaction.replace(R.id.global_container,loanAccountSummaryFragment).commit();
-
+        fragmentTransaction.replace(R.id.global_container,dataTableFragment).commit();
     }
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> demo
     /*
      * Called when a Savings Account is Selected
      * from the list of Savings Accounts on Client Details Fragment
@@ -266,6 +312,7 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
         fragmentTransaction.replace(R.id.global_container,savingsAccountSummaryFragment).commit();
     }
 
+<<<<<<< HEAD
     /*
      * Called when the make the make repayment button is clicked
      * in the Loan Account Summary Fragment.
@@ -281,6 +328,8 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
         fragmentTransaction.addToBackStack(FragmentConstants.FRAG_LOAN_ACCOUNT_SUMMARY);
         fragmentTransaction.replace(R.id.global_container, loanRepaymentFragment).commit();
     }
+=======
+>>>>>>> demo
 
     /*
      * Called when the make the make deposit button is clicked
@@ -322,6 +371,15 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
         fragmentTransaction.replace(R.id.global_container, savingsAccountTransactionFragment).commit();
     }
 
+    @Override
+    public void makeTransfer(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType){
+        AccountTransferFragment accountTransferFragment = AccountTransferFragment.newInstance(savingsAccountWithAssociations, transactionType);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.addToBackStack(FragmentConstants.FRAG_SAVINGS_ACCOUNT_SUMMARY);
+        fragmentTransaction.replace(R.id.global_container, accountTransferFragment).commit();
+
+    }
+
     /**
      * Returns true if Google Play services is available, otherwise false.
      */
@@ -351,8 +409,8 @@ public class ClientActivity extends ActionBarActivity implements ClientDetailsFr
     public void onConnected(Bundle dataBundle) {
         locationAvailable.set(true);
         Log.d(this.getLocalClassName(), "Connected to location services");
-        Log.d(this.getLocalClassName(), "Current location: "
-                + mLocationClient.getLastLocation().toString());
+        //Log.d(this.getLocalClassName(), "Current location: "
+        //        + mLocationClient.getLastLocation().toString());
     }
 
     /*

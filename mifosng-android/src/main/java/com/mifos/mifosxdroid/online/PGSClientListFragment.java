@@ -15,14 +15,12 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.mifos.mifosxdroid.GroupActivity;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.ClientNameListAdapter;
 import com.mifos.objects.client.Client;
 import com.mifos.objects.client.Page;
 import com.mifos.services.API;
 import com.mifos.utils.Constants;
-import com.mifos.services.API;
 import com.mifos.utils.SafeUIBlockingUtility;
 
 import org.apache.http.HttpStatus;
@@ -168,10 +166,6 @@ public class PGSClientListFragment extends Fragment {
 
             case R.id.mItem_search:
                 startActivity(new Intent(getActivity(), ClientSearchActivity.class));
-                break;
-
-            case R.id.offline_menu:
-                startActivity(new Intent(getActivity(), GroupActivity.class));
                 break;
 
             default: //DO NOTHING

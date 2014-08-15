@@ -11,20 +11,25 @@ import com.mifos.objects.accountTransfer.AccountTransferResponse;
 import com.mifos.objects.accountTransfer.AccountTransferTemplateRequest;
 import com.mifos.objects.accountTransfer.AccountTransferTemplateResponse;
 import com.mifos.objects.accounts.ClientAccounts;
-import com.mifos.objects.accounts.loan.LoanRepaymentRequest;
-import com.mifos.objects.accounts.loan.LoanRepaymentResponse;
-import com.mifos.objects.accounts.savings.SavingsAccount;
+import com.mifos.objects.accounts.pgs.ServiceAccountRequest;
+import com.mifos.objects.accounts.pgs.ServiceAccountResponse;
 import com.mifos.objects.accounts.savings.SavingsAccountTransactionRequest;
 import com.mifos.objects.accounts.savings.SavingsAccountTransactionResponse;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
-import com.mifos.objects.accounts.savings.SavingsDepositRequest;
-import com.mifos.objects.accounts.savings.SavingsDepositResponse;
 import com.mifos.objects.client.Client;
+import com.mifos.objects.client.CreateClientTransactionRequest;
+import com.mifos.objects.client.CreateClientTransactionResponse;
 import com.mifos.objects.client.Page;
 import com.mifos.objects.db.CollectionSheet;
+<<<<<<< HEAD
 import com.mifos.objects.accounts.loan.Loan;
 import com.mifos.objects.noncore.DataTable;
 import com.mifos.objects.templates.loans.LoanRepaymentTemplate;
+=======
+import com.mifos.objects.noncore.DataTable;
+import com.mifos.objects.templates.clients.NewClientTemplate;
+import com.mifos.objects.templates.pgs.ServiceAccountTemplate;
+>>>>>>> demo
 import com.mifos.objects.templates.savings.SavingsAccountTransactionTemplate;
 import com.mifos.services.data.CollectionSheetPayload;
 import com.mifos.services.data.GpsCoordinatesRequest;
@@ -36,19 +41,42 @@ import com.mifos.utils.Constants;
 import java.util.Iterator;
 import java.util.List;
 
-import retrofit.*;
+import retrofit.Callback;
+import retrofit.ErrorHandler;
+import retrofit.RequestInterceptor;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.http.*;
+import retrofit.http.Body;
+import retrofit.http.DELETE;
+import retrofit.http.GET;
+import retrofit.http.Headers;
+import retrofit.http.Multipart;
+import retrofit.http.POST;
+import retrofit.http.Part;
+import retrofit.http.Path;
+import retrofit.http.Query;
 import retrofit.mime.TypedFile;
 
 public class API {
 
+<<<<<<< HEAD
     //This instance has more Data for Testing
     public static String mInstanceUrl = "https://demo.openmf.org/mifosng-provider/api/v1";
 
     public static final String ACCEPT_JSON = "Accept: application/json";
     public static final String CONTENT_TYPE_JSON = "Content-Type: application/json";
 
+=======
+    // Mifos instance
+    public static String mMifosInstanceUrl = "https://demo.openmf.org/mifosng-provider/api/v1";
+    public static final String ACCEPT_JSON = "Accept: application/json";
+    public static final String CONTENT_TYPE_JSON = "Content-Type: application/json";
+
+    // PGS instance
+    public static String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/";
+
+>>>>>>> demo
     /*
         As Mifos is a multi-tenant platform, all requests require you to specify a tenant
         as a header in each request.
@@ -56,18 +84,21 @@ public class API {
     public static final String HEADER_MIFOS_TENANT_ID = "X-Mifos-Platform-TenantId";
 
     public static final String HEADER_AUTHORIZATION = "Authorization";
+<<<<<<< HEAD
 
     //public static String mInstanceUrl = "https://demo2.openmf.org/mifosng-provider/api/v1";
+=======
+>>>>>>> demo
 
     static RestAdapter sRestAdapter;
     public static CenterService centerService;
     public static ClientAccountsService clientAccountsService;
     public static ClientService clientService;
-    public static LoanService loanService;
     public static SavingsAccountService savingsAccountService;
     public static SearchService searchService;
     public static UserAuthService userAuthService;
     public static AccountTransfersService accountTransfersService;
+    public static PGSServiceAccountService pgsServiceAccountService;
     // TODO: this service is not done yet!
     public static GpsCoordinatesService gpsCoordinatesService;
 
@@ -80,14 +111,16 @@ public class API {
         centerService = sRestAdapter.create(CenterService.class);
         clientAccountsService = sRestAdapter.create(ClientAccountsService.class);
         clientService = sRestAdapter.create(ClientService.class);
-        loanService = sRestAdapter.create(LoanService.class);
         savingsAccountService = sRestAdapter.create(SavingsAccountService.class);
         searchService = sRestAdapter.create(SearchService.class);
         userAuthService = sRestAdapter.create(UserAuthService.class);
         gpsCoordinatesService = sRestAdapter.create(GpsCoordinatesService.class);
+        accountTransfersService = sRestAdapter.create(AccountTransfersService.class);
+
     }
 
-    private static RestAdapter createRestAdapter(final String url) {
+    private static RestAdapter createRestAdapter(final String url)  {
+
         RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(url)
                 .setRequestInterceptor(new RequestInterceptor() {
                     @Override
@@ -168,6 +201,9 @@ public class API {
 
     public interface ClientAccountsService {
 
+        @GET("/clients/template")
+        public void getClientDetailsTemplate(Callback<NewClientTemplate> clientTemplateCallback);
+
         @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/clients/{clientId}/accounts")
         public void getAllAccountsOfClient(@Path("clientId") int clientId, Callback<ClientAccounts> callback);
@@ -192,6 +228,10 @@ public class API {
                                       @Part("file") TypedFile file,
                                       Callback<Response> callback);
 
+        @POST("/clients")
+        public void createNewClient(@Body CreateClientTransactionRequest createClientTransactionRequest,
+                                    Callback<CreateClientTransactionResponse> clientTransactionResponseCallback);
+
         @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @DELETE("/clients/{clientId}/images")
         void deleteClientImage(@Path("clientId") int clientId, Callback<Response> callback);
@@ -214,24 +254,6 @@ public class API {
         @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @GET("/search?resource=clients")
         public void searchClientsByName(@Query("query") String clientName, Callback<List<SearchedEntity>> callback);
-
-    }
-
-    public interface LoanService {
-
-        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
-        @GET("/loans/{loanId}")
-        public void getLoanById(@Path("loanId") int loanId, Callback<Loan> callback);
-
-        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
-        @GET("/loans/{loanId}/transactions/template?command=repayment")
-        public void getLoanRepaymentTemplate(@Path("loanId") int loanId, Callback<LoanRepaymentTemplate> callback);
-
-        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
-        @POST("/loans/{loanId}/transactions?command=repayment")
-        public void submitPayment(@Path("loanId") int loanId,
-                                  @Body LoanRepaymentRequest loanRepaymentRequest,
-                                  Callback<LoanRepaymentResponse> loanRepaymentResponseCallback);
 
     }
 
@@ -265,9 +287,9 @@ public class API {
         @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
         @POST("/savingsaccounts/{savingsAccountId}/transactions")
         public void processTransaction(@Path("savingsAccountId") int savingsAccountId,
-                                              @Query("command") String transactionType,
-                                              @Body SavingsAccountTransactionRequest savingsAccountTransactionRequest,
-                                              Callback<SavingsAccountTransactionResponse> savingsAccountTransactionResponseCallback);
+                                       @Query("command") String transactionType,
+                                       @Body SavingsAccountTransactionRequest savingsAccountTransactionRequest,
+                                       Callback<SavingsAccountTransactionResponse> savingsAccountTransactionResponseCallback);
 
     }
 
@@ -285,6 +307,23 @@ public class API {
 
     }
 
+<<<<<<< HEAD
+=======
+    public interface PGSServiceAccountService{
+
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
+        @GET("/serviceaccount/{serviceAccountId}")
+        public void retrieveTemplate(@Path("serviceAccountId") int serviceAccountId,
+                                     Callback<ServiceAccountTemplate> serviceAccountTemplateCallback);
+
+        @Headers({ACCEPT_JSON, CONTENT_TYPE_JSON})
+        @POST("/serviceaccount")
+        public void createServiceAccount(@Body ServiceAccountRequest serviceAccountRequest,
+                                         Callback<ServiceAccountResponse> callback);
+
+    }
+
+>>>>>>> demo
     /**
      * Service for authenticating users.
      * No other service can be used without authentication.
@@ -346,11 +385,25 @@ public class API {
     }
 
     public static synchronized void setInstanceUrl(String url) {
-        mInstanceUrl = url;
+        mMifosInstanceUrl = url;
         init();
     }
 
     public static synchronized String getInstanceUrl() {
-        return mInstanceUrl;
+        return mMifosInstanceUrl;
+    }
+
+    /**
+     * Method to chose which instance's API you wish to access. Choices are:
+     * 1 = mifos instance URL
+     * 2 = PGS Instance URL
+     * @param choice
+     */
+    public static synchronized void chooseInstanceUrl(int choice) {
+        if (choice == 1) {
+            setInstanceUrl(mMifosInstanceUrl);
+        } else if (choice == 2) {
+            setInstanceUrl(mPGSInstanceUrl);
+        }
     }
 }

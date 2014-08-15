@@ -11,7 +11,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
-import com.mifos.mifosxdroid.GroupActivity;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.FragmentAdapter;
 
@@ -78,15 +77,12 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
 
     public void initTabListener(){
         getSupportActionBar().addTab(getTab("Clients"), 0, true);
-        //getSupportActionBar().addTab(getTab("Centers"), 1, false);
     }
 
     public List<Fragment> getListOfAllFragments(){
 
         List<Fragment> fragmentList = new ArrayList<Fragment>();
         fragmentList.add(new PGSClientListFragment());
-        //fragmentList.add(new CenterListFragment());
-
         return fragmentList;
     }
 
@@ -105,9 +101,6 @@ public class DashboardFragmentActivity extends ActionBarActivity implements Acti
         Log.d(TAG, "onOptionsItemSelected: " + item.getItemId());
 
         switch (item.getItemId()) {
-            case R.id.offline:
-                startActivity(new Intent(this, GroupActivity.class));
-                break;
             case R.id.logout:
                 startActivity(new Intent(DashboardFragmentActivity.this, LogoutActivity.class));
                 break;

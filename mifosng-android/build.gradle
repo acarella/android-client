@@ -38,4 +38,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:4.4.52'
     compile 'com.jakewharton.fliptables:fliptables:1.0.1'
     compile 'javax.annotation:jsr250-api:1.0@jar'
+    compile files('libs/bcprov-jdk15on-151.jar')
+    compile files('libs/okhttp-2.0.0.jar')
+    compile files('libs/okio-1.0.0.jar')
 }

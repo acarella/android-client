@@ -5,17 +5,13 @@ package com.mifos.mifosxdroid.online;
  * Uses code from ClientActivity.java
  */
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.mifos.mifosxdroid.GroupActivity;
 import com.mifos.mifosxdroid.R;
-import com.mifos.objects.accounts.loan.Loan;
-import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
 import com.mifos.utils.Constants;
 import com.mifos.utils.FragmentConstants;
@@ -61,15 +57,12 @@ public class PGSClientActivity extends ActionBarActivity implements
                 intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, 357);
                 startActivity(intent);
                 break;
-
             case R.id.mItem_search:
                 startActivity(new Intent(PGSClientActivity.this, ClientSearchActivity.class));
                 break;
-
-            case R.id.offline_menu:
-                startActivity(new Intent(PGSClientActivity.this, GroupActivity.class));
+            case R.id.logout:
+                startActivity(new Intent(PGSClientActivity.this, LogoutActivity.class));
                 break;
-
             default: //DO NOTHING
                 break;
         }
