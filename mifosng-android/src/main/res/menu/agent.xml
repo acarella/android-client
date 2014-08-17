@@ -3,26 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.mifos.mifosxdroid.online.ClientActivity" >
 
-<<<<<<< HEAD
-=======
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="10"
         app:showAsAction="never" />
 
-<<<<<<< HEAD
->>>>>>> demo
-    <item android:id="@+id/action_save_location"
-        android:title="@string/action_save_location"
-=======
-    <item android:id="@+id/agent_home"
-        android:title="@string/agent_home"
->>>>>>> demo
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-
-<<<<<<< HEAD
-=======
     <item
         android:id="@+id/action_new_client"
         android:title="@string/action_new_client"
@@ -35,5 +20,4 @@
         android:orderInCategory="999"
         android:enabled="true"/>
 
->>>>>>> demo
 </menu>

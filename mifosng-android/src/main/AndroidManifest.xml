@@ -32,25 +32,18 @@
         <activity
             android:name="com.mifos.mifosxdroid.online.LogoutActivity"
             android:label="@string/logout" />
-        <activity
-            android:name="com.mifos.mifosxdroid.online.DashboardFragmentActivity"
-            android:label="Dashboard" >
-        </activity>
 
         <activity android:name="com.mifos.mifosxdroid.online.ClientSearchActivity" />
-        <activity
-            android:name="com.mifos.mifosxdroid.ClientActivity"
-            android:configChanges="orientation|screenSize" />
 
         <!-- PayGoSol activities -->
         <activity
-            android:name="com.mifos.mifosxdroid.online.PGSAgentLoginActivity"
+            android:name=".online.NewClientCreationLoginActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".online.CreateClientActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name="com.mifos.mifosxdroid.online.PGSClientActivity"
+            android:name=".online.ClientActivity"
             android:label="PGSClientActivity">
             <meta-data
         android:name="android.support.PARENT_ACTIVITY"
@@ -71,7 +64,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.mifos.mifosxdroid.online.ClientActivity"
+            android:name="com.mifos.mifosxdroid.online.AgentActivity"
             android:label="@string/title_activity_client" >
         </activity>
     </application>

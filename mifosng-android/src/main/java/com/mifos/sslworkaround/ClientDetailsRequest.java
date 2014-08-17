@@ -1,6 +1,7 @@
 package com.mifos.sslworkaround;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -12,16 +13,15 @@ import java.io.IOException;
 /**
  * Created by antoniocarella on 8/5/14.
  */
-public class ClientDetails extends AsyncTask<String, Void, String> {
-
-    public static String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients";
+public class ClientDetailsRequest extends AsyncTask<String, Void, String> {
+    public final static String TAG = ClientDetailsRequest.class.getSimpleName();
 
     private String result;
 
     @Override
     protected String doInBackground(String... clientId) {
-
-        String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients";
+        Log.d(TAG, "doInBackground()");
+        String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients";
         mPGSInstanceUrl = mPGSInstanceUrl + "/" + clientId[0];
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();

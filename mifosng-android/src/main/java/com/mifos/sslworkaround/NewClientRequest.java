@@ -1,6 +1,7 @@
 package com.mifos.sslworkaround;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.mifos.objects.client.CreateClientTransactionRequest;
@@ -17,15 +18,15 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created by antoniocarella on 8/5/14.
  */
-public class NewClientCreator extends AsyncTask<CreateClientTransactionRequest, Void, String> {
-
-    public static String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients";
+public class NewClientRequest extends AsyncTask<CreateClientTransactionRequest, Void, String> {
+    public final static String TAG = NewClientRequest.class.getSimpleName();
+    public static String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients";
 
     private String result;
 
     @Override
     protected String doInBackground(CreateClientTransactionRequest... createClientTransactionRequest) {
-
+        Log.d(TAG, "doInBackground()");
         String newClientParams = new Gson().toJson(createClientTransactionRequest[0]);
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();

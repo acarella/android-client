@@ -33,7 +33,7 @@ public class Client {
     private String externalId;
     private int savingsAccountId;
     private int mifosClientId;
-
+    private int serviceAccountId;
 
     public int getId() {
         return id;
@@ -191,6 +191,13 @@ public class Client {
 
     public void setSavingsAccountId(int savingsAccountId) { this.savingsAccountId = savingsAccountId;}
 
+    public int getServiceAccountId() {
+        return serviceAccountId;
+    }
+
+    public void setServiceAccountId(int serviceAccountId) {
+        this.serviceAccountId = serviceAccountId;
+    }
 
     public String getFormattedActivationDateAsString()
     {
@@ -239,6 +246,7 @@ public class Client {
                 ", externalId='" + externalId + '\'' +
                 ", savingsAccountId=" + savingsAccountId +
                 ", mifosClientId=" + mifosClientId +
+                ", serviceAccountId=" + serviceAccountId +
                 '}';
     }
 }

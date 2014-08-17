@@ -118,7 +118,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/et_last_name"
-                    android:inputType="textCapWords|textPersonName" />
+                    android:inputType="textCapWords|textPersonName"
+                    android:nextFocusDown="@+id/et_dob" />
             </TableRow>
 
             <TableRow
@@ -199,7 +200,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/submit"
+            android:text="@string/create_new_client"
             android:id="@+id/bt_submit_new_client"
             android:layout_below="@+id/tbl_new_clientDetails"
             android:layout_centerHorizontal="true"

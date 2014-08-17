@@ -1,4 +1,4 @@
-package com.mifos.mifosxdroid.online;
+package com.mifos.mifosxdroid.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,10 +10,8 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,11 +24,10 @@ import com.google.gson.Gson;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.SavingsAccountsListAdapter;
 import com.mifos.objects.accounts.ClientAccounts;
+import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.objects.client.Client;
-import com.mifos.objects.noncore.DataTable;
 import com.mifos.services.API;
-import com.mifos.sslworkaround.ClientAccountsWorkAround;
-import com.mifos.sslworkaround.ClientDetails;
+import com.mifos.sslworkaround.ClientDetailsRequest;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
 
@@ -39,38 +36,36 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-<<<<<<< HEAD
-=======
 import java.util.concurrent.ExecutionException;
->>>>>>> demo
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedFile;
 
-
+/**
+ * Created by antoniocarella on 5/30/14.
+ * Uses code from AgentAccountDetailsFragment
+ */
 public class ClientDetailsFragment extends Fragment {
-    // Intent response codes. Each response code must be a unique integer.
+    public final static String TAG = ClientDetailsFragment.class.getSimpleName();
+
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1;
 
     private OnFragmentInteractionListener mListener;
-    
+
     private int clientId;
 
     @InjectView(R.id.tv_fullName) TextView tv_fullName;
     @InjectView(R.id.tv_accountNumber) TextView tv_accountNumber;
     @InjectView(R.id.tv_activationDate) TextView tv_activationDate;
     @InjectView(R.id.tv_toggle_savings_accounts) TextView tv_toggle_savings_accounts;
-    @InjectView(R.id.tv_count_savings_accounts) TextView tv_count_savings_accounts;
     @InjectView(R.id.lv_accounts_savings) ListView lv_accounts_savings;
-    @InjectView(R.id.iv_clientImage) ImageView iv_clientImage;
-
+    @InjectView(R.id.iv_clientImage)
+    ImageView iv_clientImage;
 
     View rootView;
 
@@ -92,7 +87,7 @@ public class ClientDetailsFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param clientId Client's Id
-     * @return A new instance of fragment ClientDetailsFragment.
+     * @return A new instance of fragment AgentDetailsFragment.
      */
     public static ClientDetailsFragment newInstance(int clientId, boolean didUseWorkAround) {
         ClientDetailsFragment fragment = new ClientDetailsFragment();
@@ -109,6 +104,7 @@ public class ClientDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate()");
         if (getArguments() != null) {
             clientId = getArguments().getInt(Constants.CLIENT_ID);
             didUseWorkAround = getArguments().getBoolean(Constants.DID_USE_WORKAROUND);
@@ -123,7 +119,7 @@ public class ClientDetailsFragment extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_client_details, container, false);
         activity = (ActionBarActivity) getActivity();
-        safeUIBlockingUtility = new SafeUIBlockingUtility(ClientDetailsFragment.this.getActivity());
+        safeUIBlockingUtility = new SafeUIBlockingUtility(this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         actionBar = activity.getSupportActionBar();
         ButterKnife.inject(this, rootView);
@@ -131,7 +127,6 @@ public class ClientDetailsFragment extends Fragment {
 
         return rootView;
     }
-
 
     private static byte[] inputStreamToByteArray(InputStream input) throws IOException {
         byte[] buffer = new byte[1024];
@@ -145,19 +140,12 @@ public class ClientDetailsFragment extends Fragment {
 
     public void inflateClientInformation() {
 
-<<<<<<< HEAD
-        getClientDetails();
-
-=======
         if (didUseWorkAround){
             getClientDetailsFromWorkAround();
         } else {
             getClientDetails();
         }
->>>>>>> demo
     }
-
-
 
     @Override
     public void onAttach(Activity activity) {
@@ -250,65 +238,14 @@ public class ClientDetailsFragment extends Fragment {
 
                 if (client != null) {
                     actionBar.setTitle("" + client.getFirstname() + " " + client.getLastname() +
-                    " 's account.");
+                            " 's account.");
                     tv_fullName.setText(client.getDisplayName());
                     tv_accountNumber.setText(client.getAccountNo());
                     tv_activationDate.setText(client.getFormattedActivationDateAsString());
 
-
-                    // TODO: For some reason Retrofit always calls the failure() method even after
-                    // receiving a 200 response with image bytes. Perhaps we need to change the
-                    // argument type from TypedFile to something else?
-                    if (client.isImagePresent()) {
-                        API.clientService.getClientImage(client.getId(), new Callback<TypedFile>() {
-
-                            @Override
-                            public void success(final TypedFile file, Response response) {
-                                try {
-                                    // TODO: Parse bytes and render image in the UI.
-                                    byte[] bytes = inputStreamToByteArray(file.in());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void failure(RetrofitError retrofitError) {
-                                Log.d("ClientDetailsFragment", "No image found for clientId " + client.getId());
-                            }
-
-                        });
-                    }
-
-                    iv_clientImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            PopupMenu menu = new PopupMenu(getActivity(), view);
-                            menu.getMenuInflater().inflate(R.menu.client_image_popup, menu.getMenu());
-                            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem menuItem) {
-                                    switch (menuItem.getItemId()) {
-                                        case R.id.client_image_capture:
-                                            captureClientImage();
-                                            break;
-                                        case R.id.client_image_remove:
-                                            deleteClientImage();
-                                            break;
-                                        default:
-                                            Log.e("ClientDetailsFragment", "Unrecognized client image menu item");
-                                    }
-                                    return true;
-                                }
-                            });
-                            menu.show();
-                        }
-                    });
-
                     safeUIBlockingUtility.safelyUnBlockUI();
 
                     inflateClientsAccounts();
-
 
                 }
 
@@ -433,7 +370,7 @@ public class ClientDetailsFragment extends Fragment {
 
         String clientDetails = null;
         try {
-            clientDetails = new ClientDetails().execute(String.valueOf(clientId)).get();
+            clientDetails = new ClientDetailsRequest().execute(String.valueOf(clientId)).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -452,10 +389,7 @@ public class ClientDetailsFragment extends Fragment {
 
             // reassign mifos clientId to clientId for call to inflate accounts
             clientId = client.getMifosClientId();
-
             safeUIBlockingUtility.safelyUnBlockUI();
-
-
             inflateClientsAccounts();
         }
     }
@@ -477,52 +411,37 @@ public class ClientDetailsFragment extends Fragment {
                     return;
                 }
 
-                final String savingsAccountsStringResource = getResources().getString(R.string.savingAccounts);
-                final String savingsListOpen = "- " + savingsAccountsStringResource;
-                final String savingsListClosed = "+ " + savingsAccountsStringResource;
+                int listSize = clientAccounts.getSavingsAccounts().size();
+                if (listSize > 0) {
 
-                if (clientAccounts.getSavingsAccounts().size() > 0) {
-                    SavingsAccountsListAdapter savingsAccountsListAdapter =
-                            new SavingsAccountsListAdapter(getActivity().getApplicationContext(), clientAccounts.getSavingsAccounts());
-                    tv_toggle_savings_accounts.setText(savingsListClosed);
-                    tv_count_savings_accounts.setText(String.valueOf(clientAccounts.getSavingsAccounts().size()));
-                    tv_toggle_savings_accounts.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (!isSavingsAccountsListOpen) {
-                                isSavingsAccountsListOpen = true;
-                                tv_toggle_savings_accounts.setText(savingsListOpen);
-                                //TODO SIZE AND ANIMATION TO BE ADDED
-                                //Drop Down and Fold Up
-                                //Calculate Size of 1 cell and show a couple of them
-                                isLoanAccountsListOpen = false;
-                                lv_accounts_savings.setVisibility(View.VISIBLE);
-                            } else {
-                                isSavingsAccountsListOpen = false;
-                                tv_toggle_savings_accounts.setText(savingsListClosed);
-                                //TODO SIZE AND ANIMATION TO BE ADDED
-                                //Drop Down and Fold Up
-                                //Calculate Size of 1 cell and show a couple of them
-                                lv_accounts_savings.setVisibility(View.GONE);
-                            }
+                    List<SavingsAccount> openAccounts = new ArrayList<SavingsAccount>();
+                    for (int i = 0; i < listSize; i ++ ){
+                        if (clientAccounts.getSavingsAccounts().get(i).getStatus().getClosed() != true){
+                            openAccounts.add(clientAccounts.getSavingsAccounts().get(i));
                         }
-                    });
+                    }
+
+                    SavingsAccountsListAdapter savingsAccountsListAdapter =
+                            new SavingsAccountsListAdapter(getActivity().getApplicationContext(), openAccounts);
                     lv_accounts_savings.setAdapter(savingsAccountsListAdapter);
+                    lv_accounts_savings.setVisibility(View.VISIBLE);
                     lv_accounts_savings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+<<<<<<< HEAD:mifosng-android/src/main/java/com/mifos/mifosxdroid/online/ClientDetailsFragment.java
 
 >>>>>>> demo
+=======
+>>>>>>> demo:mifosng-android/src/main/java/com/mifos/mifosxdroid/fragments/ClientDetailsFragment.java
                             mListener.loadSavingsAccountSummary(clientAccounts.getSavingsAccounts().get(i).getId());
                         }
                     });
 
+                } else {
+                    tv_toggle_savings_accounts.setText("User has no active accounts.");
                 }
 
                 safeUIBlockingUtility.safelyUnBlockUI();
-
-                inflateDataTablesList();
-
 
             }
 
@@ -538,6 +457,7 @@ public class ClientDetailsFragment extends Fragment {
 
     }
 
+<<<<<<< HEAD:mifosng-android/src/main/java/com/mifos/mifosxdroid/online/ClientDetailsFragment.java
     public void inflateClientAccountsWithWorkAround(){
 
 <<<<<<< HEAD
@@ -682,6 +602,8 @@ public class ClientDetailsFragment extends Fragment {
 
     }
 
+=======
+>>>>>>> demo:mifosng-android/src/main/java/com/mifos/mifosxdroid/fragments/ClientDetailsFragment.java
     public interface OnFragmentInteractionListener {
 
         public void loadSavingsAccountSummary(int savingsAccountNumber);
@@ -690,3 +612,4 @@ public class ClientDetailsFragment extends Fragment {
 
 
 }
+

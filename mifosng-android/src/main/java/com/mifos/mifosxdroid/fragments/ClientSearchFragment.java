@@ -1,4 +1,4 @@
-package com.mifos.mifosxdroid.online;
+package com.mifos.mifosxdroid.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.mifos.mifosxdroid.R;
+import com.mifos.mifosxdroid.online.AgentActivity;
 import com.mifos.objects.SearchedEntity;
 import com.mifos.services.API;
 import com.mifos.utils.Constants;
@@ -149,7 +150,7 @@ public class ClientSearchFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-        Intent clientActivityIntent = new Intent(getActivity(),ClientActivity.class);
+        Intent clientActivityIntent = new Intent(getActivity(),AgentActivity.class);
         clientActivityIntent.putExtra(Constants.CLIENT_ID, clientIds.get(i));
         startActivity(clientActivityIntent);
 

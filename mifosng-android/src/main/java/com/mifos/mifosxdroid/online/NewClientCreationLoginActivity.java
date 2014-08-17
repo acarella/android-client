@@ -20,10 +20,6 @@ import com.mifos.objects.User;
 import com.mifos.services.API;
 import com.mifos.utils.Constants;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -37,8 +33,8 @@ import retrofit.client.Response;
  * Uses code from LoginActivity.java, Created by ishankhanna on 08/02/14.
  */
 
-public class PGSAgentLoginActivity extends ActionBarActivity implements Callback<User> {
-
+public class NewClientCreationLoginActivity extends ActionBarActivity implements Callback<User> {
+    public final static String TAG = NewClientCreationLoginActivity.class.getSimpleName();
     public static String INSTANCE_URL_KEY = "instanceURL";
     public static String mPGSInstanceUrl = "https://localhost:8443/mifosng-provider/api/v1/";
 
@@ -60,8 +56,8 @@ public class PGSAgentLoginActivity extends ActionBarActivity implements Callback
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pgs_agent_login_activity);
-
-        context = PGSAgentLoginActivity.this;
+        Log.d(TAG, "onCreate()");
+        context = NewClientCreationLoginActivity.this;
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         previouslyEnteredUrl = sharedPreferences.getString(INSTANCE_URL_KEY,
@@ -90,6 +86,7 @@ public class PGSAgentLoginActivity extends ActionBarActivity implements Callback
 
         //TODO Create All Validations Here for all input fields
 
+        /*
         try {
             URL url = new URL(previouslyEnteredUrl);
             mPGSInstanceUrl = url.toURI().toString();
@@ -103,7 +100,7 @@ public class PGSAgentLoginActivity extends ActionBarActivity implements Callback
             Log.e(tag, "Invalid instance URL: " + mPGSInstanceUrl, uriException);
             throw new ShortOfLengthException("Instance URL", 5);
         }
-
+        */
 
         username = et_username.getEditableText().toString();
         if (username.length() < 5) {
@@ -115,6 +112,8 @@ public class PGSAgentLoginActivity extends ActionBarActivity implements Callback
             throw new ShortOfLengthException("Password", 6);
         }
 
+
+
         return true;
     }
 
@@ -124,7 +123,7 @@ public class PGSAgentLoginActivity extends ActionBarActivity implements Callback
         Toast.makeText(context, "Welcome " + user.getUsername(), Toast.LENGTH_SHORT).show();
         saveAuthenticationKey("Basic " + user.getBase64EncodedAuthenticationKey());
         saveUserId(user.getUserId());
-        Intent intent = new Intent(PGSAgentLoginActivity.this, CreateClientActivity.class);
+        Intent intent = new Intent(NewClientCreationLoginActivity.this, CreateClientActivity.class);
         intent.putExtra(Constants.CLIENT_ID, user.getUserId());
         startActivity(intent);
         finish();

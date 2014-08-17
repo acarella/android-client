@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.mifos.exceptions.ShortOfLengthException;
-import com.mifos.mifosxdroid.online.ClientActivity;
+import com.mifos.mifosxdroid.online.AgentActivity;
 import com.mifos.objects.User;
 import com.mifos.services.API;
 import com.mifos.utils.Constants;
@@ -37,7 +37,7 @@ import retrofit.client.Response;
  * Created by ishankhanna on 08/02/14.
  */
 public class LoginActivity extends ActionBarActivity implements Callback<User> {
-
+    public final static String TAG = LoginActivity.class.getSimpleName();
     public static String INSTANCE_URL_KEY = "instanceURL";
 
     SharedPreferences sharedPreferences;
@@ -57,6 +57,7 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_login);
 
         context = LoginActivity.this;
@@ -125,7 +126,7 @@ public class LoginActivity extends ActionBarActivity implements Callback<User> {
         saveAuthenticationKey("Basic " + user.getBase64EncodedAuthenticationKey());
         //PGS foks here
         saveUserId(user.getUserId());
-        Intent intent = new Intent(LoginActivity.this, ClientActivity.class);
+        Intent intent = new Intent(LoginActivity.this, AgentActivity.class);
         intent.putExtra(Constants.CLIENT_ID, user.getUserId());
         startActivity(intent);
         finish();

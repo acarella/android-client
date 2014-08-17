@@ -1,4 +1,4 @@
-package com.mifos.mifosxdroid.online;
+package com.mifos.mifosxdroid.fragments;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.ClientNameListAdapter;
+import com.mifos.mifosxdroid.online.ClientActivity;
+import com.mifos.mifosxdroid.online.ClientSearchActivity;
+import com.mifos.mifosxdroid.online.LogoutActivity;
 import com.mifos.objects.client.Client;
 import com.mifos.objects.client.Page;
 import com.mifos.services.API;
@@ -81,7 +84,7 @@ public class PGSClientListFragment extends Fragment {
                         /**
                          * PayGoSol version begins to fork here
                          */
-                        Intent pgsClientActivityIntent = new Intent(getActivity(), PGSClientActivity.class);
+                        Intent pgsClientActivityIntent = new Intent(getActivity(), ClientActivity.class);
                         pgsClientActivityIntent.putExtra(Constants.CLIENT_ID, pageItems.get(i).getId());
                         pgsClientActivityIntent.putExtra(Constants.PGS_ACCOUNT_NUMBER, pageItems.get(i).getSavingsAccountId());
                         startActivity(pgsClientActivityIntent);
@@ -158,7 +161,7 @@ public class PGSClientListFragment extends Fragment {
 
         switch (item.getItemId()) {
             case R.id.agent_account:
-                Intent intent = new Intent(getActivity(), PGSClientActivity.class);
+                Intent intent = new Intent(getActivity(), ClientActivity.class);
                 intent.putExtra(Constants.CLIENT_ID, agentId);
                 intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, 357);
                 startActivity(intent);
