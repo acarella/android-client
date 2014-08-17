@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 public class PopulateSpinnersRequest extends AsyncTask<Void, Void, String>{
     public final static String TAG = PopulateSpinnersRequest.class.getSimpleName();
-    public static String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients/template";
+    public static String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients/template";
 
     private String result;
 

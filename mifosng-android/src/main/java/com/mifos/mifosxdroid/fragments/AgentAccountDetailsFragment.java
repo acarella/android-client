@@ -93,7 +93,7 @@ public class AgentAccountDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_pgs_savings_account_summary, container, false);
+        rootView = inflater.inflate(R.layout.fragment_agent_account_summary, container, false);
         activity = (ActionBarActivity) getActivity();
         safeUIBlockingUtility = new SafeUIBlockingUtility(AgentAccountDetailsFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);

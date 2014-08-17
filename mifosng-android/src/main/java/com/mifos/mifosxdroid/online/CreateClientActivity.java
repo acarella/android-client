@@ -137,7 +137,7 @@ public class CreateClientActivity extends ActionBarActivity {
         });
         */
 
-        //TODO DO NOT USE THIS WORKAROUND CODE
+        //TODO DO NOT USE THIS WORKAROUND CODE IN PRODUCTION!
         PopulateSpinnersRequest populate = new PopulateSpinnersRequest();
         String results = null;
         try {

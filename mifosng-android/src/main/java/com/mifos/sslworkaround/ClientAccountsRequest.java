@@ -22,7 +22,7 @@ public class ClientAccountsRequest extends AsyncTask<String, Void, String> {
         Log.d(TAG, "doInBackground()");
         String clientIdString = clientIdArray[0];
 
-        String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients/";
+        String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients/";
         mPGSInstanceUrl = mPGSInstanceUrl + clientIdString + "/accounts";
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();

@@ -54,7 +54,7 @@
             android:layout_weight="0.6"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="PayGoSol Account Number"
+            android:text="Product Name"
             android:id="@+id/tv_savings_product_short_name" />
 
         <TextView
@@ -162,34 +162,24 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_below="@id/divider_3"
         android:layout_marginTop="4dp"
-        android:id="@+id/recent_pgs_transactions"/>
+        android:id="@+id/last_five_savings_transactions"/>
 
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/lv_recent_pgs_transactions"
-        android:layout_below="@id/recent_pgs_transactions"
-        android:layout_above="@+id/bt_pgs_hide_withdrawal"/>
+        android:id="@+id/lv_last_five_savings_transactions"
+        android:layout_below="@id/last_five_savings_transactions"
+        android:layout_above="@+id/bt_transfer"/>
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="@string/showDepositsOnly"
-        android:id="@+id/bt_pgs_hide_withdrawal"
+        android:text="Make Transfer"
+        android:id="@+id/bt_transfer"
         android:layout_alignParentStart="true"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="Make Deposit"
-        android:id="@+id/bt_pgs_make_deposit"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

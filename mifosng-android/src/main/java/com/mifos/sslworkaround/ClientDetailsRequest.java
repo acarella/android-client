@@ -15,14 +15,13 @@ import java.io.IOException;
  */
 public class ClientDetailsRequest extends AsyncTask<String, Void, String> {
     public final static String TAG = ClientDetailsRequest.class.getSimpleName();
-    public static String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients";
 
     private String result;
 
     @Override
     protected String doInBackground(String... clientId) {
         Log.d(TAG, "doInBackground()");
-        String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients";
+        String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients";
         mPGSInstanceUrl = mPGSInstanceUrl + "/" + clientId[0];
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();

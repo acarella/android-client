@@ -14,7 +14,7 @@ import java.io.IOException;
  * Created by antoniocarella on 8/16/14.
  */
 public class CurrentAccountInformationRequest extends AsyncTask<String, Void, String> {
-    public final static String TAG = ClientAccountsRequest.class.getSimpleName();
+    public final static String TAG = CurrentAccountInformationRequest.class.getSimpleName();
     private String result;
 
     @Override
@@ -22,7 +22,7 @@ public class CurrentAccountInformationRequest extends AsyncTask<String, Void, St
         Log.d(TAG, "doInBackground()");
         String serviceAccountString = clientIdArray[0];
 
-        String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/serviceaccount/";
+        String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/serviceaccount/";
         mPGSInstanceUrl = mPGSInstanceUrl + serviceAccountString + "/currentaccountinformation";
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();
