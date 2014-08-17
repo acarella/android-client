@@ -118,7 +118,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/et_last_name"
-                    android:inputType="textCapWords|textPersonName" />
+                    android:inputType="textCapWords|textPersonName"
+                    android:nextFocusDown="@+id/et_dob" />
             </TableRow>
 
             <TableRow

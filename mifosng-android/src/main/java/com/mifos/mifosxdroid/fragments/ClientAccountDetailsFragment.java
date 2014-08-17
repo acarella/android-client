@@ -9,14 +9,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +25,6 @@ import com.mifos.utils.SafeUIBlockingUtility;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import butterknife.OnClick;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -42,8 +37,6 @@ public class ClientAccountDetailsFragment extends Fragment {
     public final static String TAG = ClientAccountDetailsFragment.class.getSimpleName();
     @InjectView(R.id.tv_clientName)
     TextView tv_clientName;
-    @InjectView(R.id.quickContactBadge_client)
-    QuickContactBadge quickContactBadge;
     @InjectView(R.id.tv_savings_product_short_name) TextView tv_savingsProductName;
     @InjectView(R.id.tv_savingsAccountNumber) TextView tv_savingsAccountNumber;
     @InjectView(R.id.tv_savings_account_balance) TextView tv_savingsAccountBalance;
@@ -51,9 +44,6 @@ public class ClientAccountDetailsFragment extends Fragment {
     @InjectView(R.id.tv_total_withdrawals) TextView tv_totalWithdrawals;
     @InjectView(R.id.lv_last_five_savings_transactions)
     ListView lv_lastFiveTransactions;
-    @InjectView(R.id.bt_transfer)
-    Button bt_transfer;
-
 
     private OnFragmentInteractionListener mListener;
 
@@ -100,7 +90,7 @@ public class ClientAccountDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_agent_account_summary, container, false);
+        rootView = inflater.inflate(R.layout.fragment_pgs_account_summary, container, false);
         activity = (ActionBarActivity) getActivity();
         safeUIBlockingUtility = new SafeUIBlockingUtility(ClientAccountDetailsFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -174,21 +164,18 @@ public class ClientAccountDetailsFragment extends Fragment {
         mListener = null;
     }
 
-
-    @OnClick(R.id.bt_transfer)
-    public void onWithdrawalButtonClicked() {
-        mListener.makeTransfer(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_WITHDRAWAL);
-    }
-
     public interface OnFragmentInteractionListener {
         public void makeTransfer(SavingsAccountWithAssociations savingsAccountWithAssociations1, String transactionType);
     }
 
+    // TODO consider adding this extra menu item to allow transfers to an account directly from this view
+    /*
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.transfer, menu);
     }
+    */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

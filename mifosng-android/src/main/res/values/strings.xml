@@ -57,6 +57,7 @@
     <string name="payment_type">Payment Type</string>
     <string name="logout">Logout</string>
     <string name="action_save_location">Save location</string>
+    <string name="agent_home">Agent Home</string>
     <string name="Accounts">Accounts</string>
     <string name="create_new_client">Create New Client</string>
 </resources>

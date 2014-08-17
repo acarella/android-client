@@ -59,7 +59,8 @@ public class AccountTransferFragment extends Fragment {
     private String savingsAccountNumber;
     private int toAccountId;
     private int serviceAccountId;
-    private int toClientId;
+    private int toMifosClientId;
+    private int clientId;
     private int fromClientOfficeId;
     private int toClientOfficeId;
     private String transferToClientName;
@@ -185,7 +186,7 @@ public class AccountTransferFragment extends Fragment {
 
             safeUIBlockingUtility.safelyBlockUI("One moment please.", "Retrieving client information.");
             toAccountId = Integer.parseInt(et_transferAccountNo.getText().toString());
-
+            clientId = toAccountId;
             //TODO erase this workaround code. Instead use regular API class to get PGS client's Mifos id
 
             String clientDetails = null;
@@ -228,15 +229,15 @@ public class AccountTransferFragment extends Fragment {
                 // Let user know there was an issue
             }
 
-            Log.d("TAG", "toClientID: " + toAccountId);
+            Log.d("TAG", "toAccountId: " + toAccountId);
 
             API.savingsAccountService.getSavingsAccountWithAssociations(toAccountId, "all", new Callback<SavingsAccountWithAssociations>() {
                 @Override
                 public void success(SavingsAccountWithAssociations savingsAccountWithAssociations, Response response) {
 
                     transferToClientName = savingsAccountWithAssociations.getClientName();
-                    toClientId = savingsAccountWithAssociations.getClientId();
-                    getOfficeId(toClientId);
+                    toMifosClientId = savingsAccountWithAssociations.getClientId();
+                    getOfficeId(toMifosClientId);
                     safeUIBlockingUtility.safelyUnBlockUI();
 
                 }
@@ -300,13 +301,13 @@ public class AccountTransferFragment extends Fragment {
         safeUIBlockingUtility.safelyBlockUI("One moment please.", "Processing transaction.");
 
         final String transferDescription = "Account transfer from client " +
-            String.valueOf(getArguments().getInt(Constants.CLIENT_ID)) + " to client " + String.valueOf(toClientId) + ".";
+            String.valueOf(getArguments().getInt(Constants.CLIENT_ID)) + " to client " + String.valueOf(toMifosClientId) + ".";
         final AccountTransferRequest accountTransferRequest = new AccountTransferRequest();
         accountTransferRequest.setFromAccountType(SAVINGS_ACCOUNT_TYPE);
         accountTransferRequest.setFromAccountId(Integer.parseInt(getArguments().getString(Constants.SAVINGS_ACCOUNT_NUMBER)));
         accountTransferRequest.setFromClientId(getArguments().getInt(Constants.CLIENT_ID));
         accountTransferRequest.setFromOfficeId(fromClientOfficeId);
-        accountTransferRequest.setToClientId(toClientId);
+        accountTransferRequest.setToClientId(toMifosClientId);
         accountTransferRequest.setToAccountId(toAccountId);
         accountTransferRequest.setToAccountType(SAVINGS_ACCOUNT_TYPE);
         accountTransferRequest.setToOfficeId(toClientOfficeId);
@@ -337,12 +338,12 @@ public class AccountTransferFragment extends Fragment {
                                 startActivity(intent);
                             }
                         })
-                        .setNegativeButton("View client's account.", new DialogInterface.OnClickListener(){
+                        .setNegativeButton("View client's accounts.", new DialogInterface.OnClickListener(){
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
                                 Intent intent = new Intent(getActivity(), ClientActivity.class);
-                                intent.putExtra(Constants.CLIENT_ID, toClientId);
+                                intent.putExtra(Constants.CLIENT_ID, clientId);
                                 startActivity(intent);
                             }
                         })
@@ -353,6 +354,7 @@ public class AccountTransferFragment extends Fragment {
             public void failure(RetrofitError retrofitError) {
                 Log.i(TAG, "Error: " + retrofitError.getLocalizedMessage());
                 safeUIBlockingUtility.safelyUnBlockUI();
+                // TODO make special case for insufficient agent balance
                 Toast.makeText(activity, "Error processing transaction.", Toast.LENGTH_SHORT).show();
 
             }

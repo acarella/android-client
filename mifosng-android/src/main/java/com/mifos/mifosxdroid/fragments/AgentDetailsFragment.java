@@ -10,10 +10,8 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -25,12 +23,10 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.adapters.SavingsAccountsListAdapter;
-import com.mifos.mifosxdroid.online.AgentActivity;
 import com.mifos.objects.accounts.ClientAccounts;
+import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.objects.client.Client;
-import com.mifos.objects.noncore.DataTable;
 import com.mifos.services.API;
-import com.mifos.sslworkaround.ClientAccountsRequest;
 import com.mifos.sslworkaround.ClientDetailsRequest;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
@@ -40,14 +36,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import retrofit.mime.TypedFile;
@@ -242,61 +236,9 @@ public class AgentDetailsFragment extends Fragment {
                     tv_accountNumber.setText(client.getAccountNo());
                     tv_activationDate.setText(client.getFormattedActivationDateAsString());
 
-
-                    // TODO: For some reason Retrofit always calls the failure() method even after
-                    // receiving a 200 response with image bytes. Perhaps we need to change the
-                    // argument type from TypedFile to something else?
-                    if (client.isImagePresent()) {
-                        API.clientService.getClientImage(client.getId(), new Callback<TypedFile>() {
-
-                            @Override
-                            public void success(final TypedFile file, Response response) {
-                                try {
-                                    // TODO: Parse bytes and render image in the UI.
-                                    byte[] bytes = inputStreamToByteArray(file.in());
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void failure(RetrofitError retrofitError) {
-                                Log.d("AgentDetailsFragment", "No image found for clientId " + client.getId());
-                            }
-
-                        });
-                    }
-
-                    iv_clientImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            PopupMenu menu = new PopupMenu(getActivity(), view);
-                            menu.getMenuInflater().inflate(R.menu.client_image_popup, menu.getMenu());
-                            menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                                @Override
-                                public boolean onMenuItemClick(MenuItem menuItem) {
-                                    switch (menuItem.getItemId()) {
-                                        case R.id.client_image_capture:
-                                            captureClientImage();
-                                            break;
-                                        case R.id.client_image_remove:
-                                            deleteClientImage();
-                                            break;
-                                        default:
-                                            Log.e("AgentDetailsFragment", "Unrecognized client image menu item");
-                                    }
-                                    return true;
-                                }
-                            });
-                            menu.show();
-                        }
-                    });
-
                     safeUIBlockingUtility.safelyUnBlockUI();
 
                     inflateClientsAccounts();
-
-
                 }
 
             }
@@ -339,7 +281,6 @@ public class AgentDetailsFragment extends Fragment {
 
             safeUIBlockingUtility.safelyUnBlockUI();
 
-
             inflateClientsAccounts();
         }
     }
@@ -361,9 +302,18 @@ public class AgentDetailsFragment extends Fragment {
                     return;
                 }
 
-                if (clientAccounts.getSavingsAccounts().size() > 0) {
+                int listSize = clientAccounts.getSavingsAccounts().size();
+                if (listSize > 0) {
+
+                    List<SavingsAccount> openAccounts = new ArrayList<SavingsAccount>();
+                    for (int i = 0; i < listSize; i ++ ){
+                        if (clientAccounts.getSavingsAccounts().get(i).getStatus().getClosed() != true){
+                            openAccounts.add(clientAccounts.getSavingsAccounts().get(i));
+                        }
+                    }
+
                     SavingsAccountsListAdapter savingsAccountsListAdapter =
-                            new SavingsAccountsListAdapter(getActivity().getApplicationContext(), clientAccounts.getSavingsAccounts());
+                            new SavingsAccountsListAdapter(getActivity().getApplicationContext(), openAccounts);
                     lv_accounts_savings.setAdapter(savingsAccountsListAdapter);
                     lv_accounts_savings.setVisibility(View.VISIBLE);
                     lv_accounts_savings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -379,9 +329,6 @@ public class AgentDetailsFragment extends Fragment {
 
                 safeUIBlockingUtility.safelyUnBlockUI();
 
-                inflateDataTablesList();
-
-
             }
 
             @Override
@@ -389,113 +336,6 @@ public class AgentDetailsFragment extends Fragment {
 
                 Toast.makeText(activity, "Accounts not found.", Toast.LENGTH_SHORT).show();
 
-                safeUIBlockingUtility.safelyUnBlockUI();
-
-            }
-        });
-
-    }
-
-    public void inflateClientAccountsWithWorkAround(){
-
-        safeUIBlockingUtility.safelyBlockUI("Retrieving details.", "Please wait.");
-
-        String clientAccountsResponse = null;
-        try {
-            clientAccountsResponse = new ClientAccountsRequest().execute(String.valueOf(clientId)).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        Gson gson = new Gson();
-        final ClientAccounts clientAccounts =
-                gson.fromJson(clientAccountsResponse, ClientAccounts.class);
-
-        if (!isAdded()) {
-            return;
-        }
-
-        final String savingsAccountsStringResource = getResources().getString(R.string.savingAccounts);
-        final String savingsListOpen = "- " + savingsAccountsStringResource;
-        final String savingsListClosed = "+ " + savingsAccountsStringResource;
-
-        if (clientAccounts.getSavingsAccounts().size() > 0) {
-            SavingsAccountsListAdapter savingsAccountsListAdapter =
-                    new SavingsAccountsListAdapter(getActivity().getApplicationContext(), clientAccounts.getSavingsAccounts());
-            tv_toggle_savings_accounts.setText(savingsListClosed);
-            tv_toggle_savings_accounts.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!isSavingsAccountsListOpen) {
-                        isSavingsAccountsListOpen = true;
-                        tv_toggle_savings_accounts.setText(savingsListOpen);
-                        //TODO SIZE AND ANIMATION TO BE ADDED
-                        //Drop Down and Fold Up
-                        //Calculate Size of 1 cell and show a couple of them
-                        isLoanAccountsListOpen = false;
-                        lv_accounts_savings.setVisibility(View.VISIBLE);
-                    } else {
-                        isSavingsAccountsListOpen = false;
-                        tv_toggle_savings_accounts.setText(savingsListClosed);
-                        //TODO SIZE AND ANIMATION TO BE ADDED
-                        //Drop Down and Fold Up
-                        //Calculate Size of 1 cell and show a couple of them
-                        lv_accounts_savings.setVisibility(View.GONE);
-                    }
-                }
-            });
-            lv_accounts_savings.setAdapter(savingsAccountsListAdapter);
-            lv_accounts_savings.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    mListener.loadSavingsAccountSummary(clientAccounts.getSavingsAccounts().get(i).getId());
-                }
-            });
-
-        }
-
-        safeUIBlockingUtility.safelyUnBlockUI();
-    }
-
-    public static List<DataTable> clientDataTables = new ArrayList<DataTable>();
-
-    /**
-     * Use this method to fetch all datatables for client and inflate them as
-     * menu options
-     */
-    public void inflateDataTablesList(){
-
-        safeUIBlockingUtility.safelyBlockUI();
-        API.changeRestAdapterLogLevel(RestAdapter.LogLevel.NONE);
-        API.clientService.getDatatablesOfClient(new Callback<List<DataTable>>() {
-            @Override
-            public void success(List<DataTable> dataTables, Response response) {
-
-                if(dataTables != null)
-                {
-                    Log.i("DATATABLE", "FOUND");
-                    //TODO Implement Datatables inflation into menu
-                    AgentActivity.shouldAddDataTables = Boolean.TRUE;
-                    AgentActivity.didMenuDataChange = Boolean.TRUE;
-                    Iterator<DataTable> dataTableIterator = dataTables.iterator();
-                    AgentActivity.clientDataTableMenuItems.clear();
-                    while(dataTableIterator.hasNext())
-                    {
-                        DataTable dataTable = dataTableIterator.next();
-                        clientDataTables.add(dataTable);
-                        AgentActivity.clientDataTableMenuItems.add(dataTable.getRegisteredTableName());
-                    }
-                }
-
-                safeUIBlockingUtility.safelyUnBlockUI();
-
-            }
-
-            @Override
-            public void failure(RetrofitError retrofitError) {
-                Log.i("DATATABLE", retrofitError.getLocalizedMessage());
                 safeUIBlockingUtility.safelyUnBlockUI();
 
             }

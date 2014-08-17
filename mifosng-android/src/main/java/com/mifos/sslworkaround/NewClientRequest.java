@@ -20,7 +20,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class NewClientRequest extends AsyncTask<CreateClientTransactionRequest, Void, String> {
     public final static String TAG = NewClientRequest.class.getSimpleName();
-    public static String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients";
+    public static String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients";
 
     private String result;
 

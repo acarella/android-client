@@ -15,7 +15,6 @@ import android.view.MenuItem;
 
 import com.mifos.mifosxdroid.R;
 import com.mifos.mifosxdroid.fragments.AccountTransferFragment;
-import com.mifos.mifosxdroid.fragments.AgentAccountDetailsFragment;
 import com.mifos.mifosxdroid.fragments.ClientAccountDetailsFragment;
 import com.mifos.mifosxdroid.fragments.ClientDetailsFragment;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
@@ -26,7 +25,7 @@ import butterknife.ButterKnife;
 
 public class ClientActivity extends ActionBarActivity implements
         ClientDetailsFragment.OnFragmentInteractionListener,
-        AgentAccountDetailsFragment.OnFragmentInteractionListener{
+        ClientAccountDetailsFragment.OnFragmentInteractionListener{
 
     public final static String TAG = ClientActivity.class.getSimpleName();
     //TODO Hardcoding this for now, need to change when goes to production
@@ -59,15 +58,15 @@ public class ClientActivity extends ActionBarActivity implements
 
 
         switch (item.getItemId()) {
-            case R.id.agent_account:
-                Intent intent = new Intent(ClientActivity.this, ClientActivity.class);
+            case R.id.agent_home:
+                Intent intent = new Intent(ClientActivity.this, AgentActivity.class);
                 intent.putExtra(Constants.CLIENT_ID, agentId);
-                intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, 357);
                 startActivity(intent);
                 break;
-            case R.id.mItem_search:
-                startActivity(new Intent(ClientActivity.this, ClientSearchActivity.class));
+            case R.id.action_new_client:
+                startActivity(new Intent(ClientActivity.this, NewClientCreationLoginActivity.class));
                 break;
+
             case R.id.logout:
                 startActivity(new Intent(ClientActivity.this, LogoutActivity.class));
                 break;
@@ -81,11 +80,11 @@ public class ClientActivity extends ActionBarActivity implements
 
     @Override
     public void loadSavingsAccountSummary(int savingsAccountNumber) {
-        ClientAccountDetailsFragment agentAccountDetailsFragment
+        ClientAccountDetailsFragment clientAccountDetailsFragment
                 = ClientAccountDetailsFragment.newInstance(savingsAccountNumber);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
-        fragmentTransaction.replace(R.id.global_container, agentAccountDetailsFragment).commit();
+        fragmentTransaction.replace(R.id.global_container, clientAccountDetailsFragment).commit();
     }
 
     @Override

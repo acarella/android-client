@@ -9,9 +9,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -175,27 +172,6 @@ public class AgentAccountDetailsFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         public void makeTransfer(SavingsAccountWithAssociations savingsAccountWithAssociations1, String transactionType);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.transfer, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch (item.getItemId()) {
-            case R.id.transfer:
-                mListener.makeTransfer(savingsAccountWithAssociations, Constants.SAVINGS_ACCOUNT_TRANSACTION_TRANSFER);
-                return true;
-            default: //DO NOTHING
-                break;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
 }
