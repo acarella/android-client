@@ -1,6 +1,7 @@
 package com.mifos.sslworkaround;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -10,20 +11,17 @@ import org.apache.http.impl.client.BasicResponseHandler;
 import java.io.IOException;
 
 /**
- * Created by antoniocarella on 8/7/14.
+ * Created by antoniocarella on 8/4/14.
  */
-public class ClientAccountsWorkAround extends AsyncTask<String, Void, String> {
+public class PopulateSpinnersRequest extends AsyncTask<Void, Void, String>{
+    public final static String TAG = PopulateSpinnersRequest.class.getSimpleName();
+    public static String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients/template";
 
     private String result;
 
     @Override
-    protected String doInBackground(String... clientIdArray) {
-
-        String clientIdString = clientIdArray[0];
-
-        String mPGSInstanceUrl = "https://10.0.0.6:8443/mifosng-provider/api/v1/pgsclients/";
-        mPGSInstanceUrl = mPGSInstanceUrl + clientIdString + "/accounts";
-
+    protected String doInBackground(Void... voids) {
+        Log.d(TAG, "doInBackground()");
         HttpClient client = new HttpsWorkaround().getNewHttpClient();
         HttpGet get = new HttpGet(mPGSInstanceUrl);
         get.setHeader("Content-Type", "application/json");
@@ -43,4 +41,5 @@ public class ClientAccountsWorkAround extends AsyncTask<String, Void, String> {
         return result;
 
     }
+
 }

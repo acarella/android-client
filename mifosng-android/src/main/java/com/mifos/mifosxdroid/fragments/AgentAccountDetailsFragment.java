@@ -1,4 +1,4 @@
-package com.mifos.mifosxdroid.online;
+package com.mifos.mifosxdroid.fragments;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -35,8 +35,8 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 
-public class SavingsAccountSummaryFragment extends Fragment {
-
+public class AgentAccountDetailsFragment extends Fragment {
+    public final static String TAG = AgentAccountDetailsFragment.class.getSimpleName();
     @InjectView(R.id.tv_clientName) TextView tv_clientName;
     @InjectView(R.id.quickContactBadge_client) QuickContactBadge quickContactBadge;
     @InjectView(R.id.tv_savings_product_short_name) TextView tv_savingsProductName;
@@ -67,14 +67,14 @@ public class SavingsAccountSummaryFragment extends Fragment {
     ActionBar actionBar;
 
     SavingsAccountWithAssociations savingsAccountWithAssociations;
-    public static SavingsAccountSummaryFragment newInstance(int savingsAccountNumber) {
-        SavingsAccountSummaryFragment fragment = new SavingsAccountSummaryFragment();
+    public static AgentAccountDetailsFragment newInstance(int savingsAccountNumber) {
+        AgentAccountDetailsFragment fragment = new AgentAccountDetailsFragment();
         Bundle args = new Bundle();
         args.putInt(Constants.SAVINGS_ACCOUNT_NUMBER, savingsAccountNumber);
         fragment.setArguments(args);
         return fragment;
     }
-    public SavingsAccountSummaryFragment() {
+    public AgentAccountDetailsFragment() {
         // Required empty public constructor
     }
 
@@ -84,6 +84,9 @@ public class SavingsAccountSummaryFragment extends Fragment {
         if (getArguments() != null) {
             savingsAccountNumber = getArguments().getInt(Constants.SAVINGS_ACCOUNT_NUMBER);
         }
+
+        Log.d(TAG, "onCreate()");
+
     }
 
     @Override
@@ -92,7 +95,7 @@ public class SavingsAccountSummaryFragment extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_pgs_savings_account_summary, container, false);
         activity = (ActionBarActivity) getActivity();
-        safeUIBlockingUtility = new SafeUIBlockingUtility(SavingsAccountSummaryFragment.this.getActivity());
+        safeUIBlockingUtility = new SafeUIBlockingUtility(AgentAccountDetailsFragment.this.getActivity());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         actionBar = activity.getSupportActionBar();
         ButterKnife.inject(this, rootView);
@@ -117,7 +120,7 @@ public class SavingsAccountSummaryFragment extends Fragment {
 
                         if(savingsAccountWithAssociations!=null) {
 
-                            SavingsAccountSummaryFragment.this.savingsAccountWithAssociations = savingsAccountWithAssociations;
+                            AgentAccountDetailsFragment.this.savingsAccountWithAssociations = savingsAccountWithAssociations;
 
                             tv_clientName.setText(savingsAccountWithAssociations.getClientName());
                             tv_savingsProductName.setText(savingsAccountWithAssociations.getSavingsProductName());
@@ -171,9 +174,6 @@ public class SavingsAccountSummaryFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-
-        public void makeDeposit(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType);
-        public void makeWithdrawal(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType);
         public void makeTransfer(SavingsAccountWithAssociations savingsAccountWithAssociations1, String transactionType);
     }
 

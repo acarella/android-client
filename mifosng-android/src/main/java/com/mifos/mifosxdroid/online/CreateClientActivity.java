@@ -24,8 +24,8 @@ import com.mifos.objects.client.CreateClientTransactionRequest;
 import com.mifos.objects.client.CreateClientTransactionResponse;
 import com.mifos.objects.templates.OfficeData;
 import com.mifos.objects.templates.clients.NewClientTemplate;
-import com.mifos.sslworkaround.NewClientCreator;
-import com.mifos.sslworkaround.PopulateSpinners;
+import com.mifos.sslworkaround.NewClientRequest;
+import com.mifos.sslworkaround.PopulateSpinnersRequest;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
 
@@ -44,8 +44,7 @@ import butterknife.OnClick;
  * Created by antoniocarella on 6/19/14.
  */
 public class CreateClientActivity extends ActionBarActivity {
-
-
+    public final static String TAG = NewClientCreationLoginActivity.class.getSimpleName();
     SharedPreferences sharedPreferences;
     private Context context;
     private long officeId;
@@ -63,6 +62,7 @@ public class CreateClientActivity extends ActionBarActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate()");
         setContentView(R.layout.activity_new_client);
         context = CreateClientActivity.this;
         safeUIBlockingUtility = new SafeUIBlockingUtility(context);
@@ -138,7 +138,7 @@ public class CreateClientActivity extends ActionBarActivity {
         */
 
         //TODO DO NOT USE THIS WORKAROUND CODE
-        PopulateSpinners populate = new PopulateSpinners();
+        PopulateSpinnersRequest populate = new PopulateSpinnersRequest();
         String results = null;
         try {
             results = populate.execute().get();
@@ -254,7 +254,7 @@ public class CreateClientActivity extends ActionBarActivity {
 
         String response = null;
         try {
-             response = new NewClientCreator().execute(createClientTransactionRequest).get();
+             response = new NewClientRequest().execute(createClientTransactionRequest).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

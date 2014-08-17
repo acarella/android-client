@@ -7,12 +7,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.mifos.mifosxdroid.R;
+import com.mifos.mifosxdroid.fragments.AgentAccountDetailsFragment;
+import com.mifos.mifosxdroid.fragments.AgentDetailsFragment;
+import com.mifos.mifosxdroid.fragments.ClientSearchFragment;
 import com.mifos.utils.FragmentConstants;
 
 import butterknife.ButterKnife;
 
 
-public class ClientSearchActivity extends ActionBarActivity implements ClientDetailsFragment.OnFragmentInteractionListener {
+public class ClientSearchActivity extends ActionBarActivity implements AgentDetailsFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +51,11 @@ public class ClientSearchActivity extends ActionBarActivity implements ClientDet
     @Override
     public void loadSavingsAccountSummary(int savingsAccountNumber) {
 
-        SavingsAccountSummaryFragment savingsAccountSummaryFragment
-                = SavingsAccountSummaryFragment.newInstance(savingsAccountNumber);
+        AgentAccountDetailsFragment agentAccountDetailsFragment
+                = AgentAccountDetailsFragment.newInstance(savingsAccountNumber);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.addToBackStack(FragmentConstants.FRAG_CLIENT_DETAILS);
-        fragmentTransaction.replace(R.id.global_container,savingsAccountSummaryFragment).commit();
+        fragmentTransaction.replace(R.id.global_container, agentAccountDetailsFragment).commit();
 
     }
 

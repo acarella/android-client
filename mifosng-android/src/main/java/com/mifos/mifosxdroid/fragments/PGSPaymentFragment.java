@@ -1,4 +1,4 @@
-package com.mifos.mifosxdroid.online;
+package com.mifos.mifosxdroid.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,40 +10,27 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
 import com.jakewharton.fliptables.FlipTable;
 import com.mifos.mifosxdroid.R;
+import com.mifos.mifosxdroid.online.ClientActivity;
 import com.mifos.objects.accountTransfer.AccountTransferRequest;
 import com.mifos.objects.accountTransfer.AccountTransferResponse;
-import com.mifos.objects.accounts.savings.SavingsAccount;
 import com.mifos.objects.accounts.savings.SavingsAccountWithAssociations;
-import com.mifos.objects.accounts.savings.SavingsDepositRequest;
-import com.mifos.objects.accounts.savings.SavingsDepositResponse;
 import com.mifos.services.API;
 import com.mifos.utils.Constants;
 import com.mifos.utils.SafeUIBlockingUtility;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -236,7 +223,7 @@ public class PGSPaymentFragment extends Fragment{
                                     Toast.LENGTH_LONG).show();
                         }
                         safeUIBlockingUtility.safelyUnBlockUI();
-                        Intent intent = new Intent(getActivity(), PGSClientActivity.class);
+                        Intent intent = new Intent(getActivity(), ClientActivity.class);
                         intent.putExtra(Constants.CLIENT_ID, clientID);
                         intent.putExtra(Constants.PGS_ACCOUNT_NUMBER, pgsAccountNumber);
                         startActivity(intent);
