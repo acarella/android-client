@@ -81,9 +81,7 @@ public class AgentAccountDetailsFragment extends Fragment {
         if (getArguments() != null) {
             savingsAccountNumber = getArguments().getInt(Constants.SAVINGS_ACCOUNT_NUMBER);
         }
-
         Log.d(TAG, "onCreate()");
-
     }
 
     @Override
@@ -96,7 +94,6 @@ public class AgentAccountDetailsFragment extends Fragment {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         actionBar = activity.getSupportActionBar();
         ButterKnife.inject(this, rootView);
-
         inflateSavingsAccountSummary();
         setHasOptionsMenu(true);
         return rootView;
@@ -125,7 +122,6 @@ public class AgentAccountDetailsFragment extends Fragment {
                             tv_savingsAccountBalance.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getAccountBalance()));
                             tv_totalDeposits.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalDeposits()));
                             tv_totalWithdrawals.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalWithdrawals()));
-
                             SavingsAccountTransactionsListAdapter savingsAccountTransactionsListAdapter
                                     = new SavingsAccountTransactionsListAdapter(getActivity().getApplicationContext(), savingsAccountWithAssociations.getTransactions());
                             lv_lastFiveTransactions.setAdapter(savingsAccountTransactionsListAdapter);
@@ -144,7 +140,6 @@ public class AgentAccountDetailsFragment extends Fragment {
                         safeUIBlockingUtility.safelyUnBlockUI();
                     }
                 });
-
     }
 
     @Override
@@ -173,5 +168,4 @@ public class AgentAccountDetailsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         public void makeTransfer(SavingsAccountWithAssociations savingsAccountWithAssociations1, String transactionType);
     }
-
 }

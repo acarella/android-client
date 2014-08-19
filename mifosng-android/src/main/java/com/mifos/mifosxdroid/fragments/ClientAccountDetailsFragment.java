@@ -125,7 +125,6 @@ public class ClientAccountDetailsFragment extends Fragment {
                             tv_savingsAccountBalance.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getAccountBalance()));
                             tv_totalDeposits.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalDeposits()));
                             tv_totalWithdrawals.setText(String.valueOf(savingsAccountWithAssociations.getSummary().getTotalWithdrawals()));
-
                             SavingsAccountTransactionsListAdapter savingsAccountTransactionsListAdapter
                                     = new SavingsAccountTransactionsListAdapter(getActivity().getApplicationContext(), savingsAccountWithAssociations.getTransactions());
                             lv_lastFiveTransactions.setAdapter(savingsAccountTransactionsListAdapter);

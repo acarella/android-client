@@ -21,8 +21,7 @@ public class ClientDetailsRequest extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... clientId) {
         Log.d(TAG, "doInBackground()");
-        String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients";
-        mPGSInstanceUrl = mPGSInstanceUrl + "/" + clientId[0];
+        String mPGSInstanceUrl = WorkAroundConstants.WORK_AROUND_URL + "pgsclients/" + clientId[0];
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();
         HttpGet get = new HttpGet(mPGSInstanceUrl);

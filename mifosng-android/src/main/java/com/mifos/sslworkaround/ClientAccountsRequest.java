@@ -22,8 +22,8 @@ public class ClientAccountsRequest extends AsyncTask<String, Void, String> {
         Log.d(TAG, "doInBackground()");
         String clientIdString = clientIdArray[0];
 
-        String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients/";
-        mPGSInstanceUrl = mPGSInstanceUrl + clientIdString + "/accounts";
+        String mPGSInstanceUrl = WorkAroundConstants.WORK_AROUND_URL + "pgsclients/"
+            + clientIdString + "/accounts";
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();
         HttpGet get = new HttpGet(mPGSInstanceUrl);

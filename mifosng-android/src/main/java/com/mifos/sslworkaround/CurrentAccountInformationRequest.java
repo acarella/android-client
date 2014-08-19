@@ -22,8 +22,8 @@ public class CurrentAccountInformationRequest extends AsyncTask<String, Void, St
         Log.d(TAG, "doInBackground()");
         String serviceAccountString = clientIdArray[0];
 
-        String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/serviceaccount/";
-        mPGSInstanceUrl = mPGSInstanceUrl + serviceAccountString + "/currentaccountinformation";
+        String mPGSInstanceUrl = WorkAroundConstants.WORK_AROUND_URL + "serviceaccount/"
+            + serviceAccountString + "/currentaccountinformation";
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();
         HttpGet get = new HttpGet(mPGSInstanceUrl);

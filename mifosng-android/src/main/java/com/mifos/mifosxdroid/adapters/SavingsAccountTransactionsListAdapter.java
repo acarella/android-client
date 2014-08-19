@@ -2,6 +2,7 @@ package com.mifos.mifosxdroid.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +22,12 @@ import butterknife.InjectView;
  * Created by ishankhanna on 30/05/14.
  */
 public class SavingsAccountTransactionsListAdapter extends BaseAdapter {
-
+    public final static String TAG = SavingsAccountTransactionsListAdapter.class.getSimpleName();
     private List<Transaction> listOfTransactions;
     private LayoutInflater layoutInflater;
 
     public SavingsAccountTransactionsListAdapter(Context context,List<Transaction> listOfTransactions) {
-
+        Log.d(TAG, "onCreate()");
         layoutInflater = LayoutInflater.from(context);
         this.listOfTransactions = listOfTransactions;
 

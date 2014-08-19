@@ -26,6 +26,7 @@
     <string name="search_by_id">enter client name or ID</string>
     <string name="search_results">Search Results</string>
     <string name="title_activity_client">ClientActivity</string>
+    <string name="title_activity_agent">AgentActivity</string>
 
     <string name="total">Total</string>
     <string name="client_name">Client Name</string>

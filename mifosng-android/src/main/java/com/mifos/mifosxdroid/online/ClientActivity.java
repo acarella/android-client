@@ -41,6 +41,7 @@ public class ClientActivity extends ActionBarActivity implements
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         ClientDetailsFragment clientDetailsFragment = ClientDetailsFragment.newInstance(clientId, true);
         fragmentTransaction.replace(R.id.global_container, clientDetailsFragment).commit();
+
     }
 
     @Override

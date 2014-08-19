@@ -58,12 +58,10 @@ public class NewClientCreationLoginActivity extends ActionBarActivity implements
         setContentView(R.layout.pgs_agent_login_activity);
         Log.d(TAG, "onCreate()");
         context = NewClientCreationLoginActivity.this;
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         previouslyEnteredUrl = sharedPreferences.getString(INSTANCE_URL_KEY,
                 mPGSInstanceUrl);
         authenticationToken = sharedPreferences.getString(User.AUTHENTICATION_KEY, "NA");
-
         ButterKnife.inject(this);
         setupUI();
         if(bt_login==null)

@@ -15,19 +15,20 @@ import java.io.IOException;
  */
 public class PopulateSpinnersRequest extends AsyncTask<Void, Void, String>{
     public final static String TAG = PopulateSpinnersRequest.class.getSimpleName();
-    public static String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients/template";
 
     private String result;
 
     @Override
     protected String doInBackground(Void... voids) {
         Log.d(TAG, "doInBackground()");
+
+        String mPGSInstanceUrl = WorkAroundConstants.WORK_AROUND_URL + "pgsclients/template";
+
         HttpClient client = new HttpsWorkaround().getNewHttpClient();
         HttpGet get = new HttpGet(mPGSInstanceUrl);
         get.setHeader("Content-Type", "application/json");
         get.setHeader("X-Mifos-Platform-TenantId", "default");
         get.setHeader("Authorization", "Basic bWlmb3M6cGFzc3dvcmQ=");
-
 
         // Execute HTTP Get Request
         HttpResponse response = null;

@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,7 +60,6 @@ public class AgentDetailsFragment extends Fragment {
     @InjectView(R.id.tv_activationDate) TextView tv_activationDate;
     @InjectView(R.id.tv_toggle_savings_accounts) TextView tv_toggle_savings_accounts;
     @InjectView(R.id.lv_accounts_savings) ListView lv_accounts_savings;
-    @InjectView(R.id.iv_clientImage) ImageView iv_clientImage;
 
     View rootView;
 
@@ -72,9 +70,6 @@ public class AgentDetailsFragment extends Fragment {
     SharedPreferences sharedPreferences;
 
     ActionBar actionBar;
-
-    boolean isLoanAccountsListOpen = false;
-    boolean isSavingsAccountsListOpen = false;
     private File capturedClientImageFile;
     private boolean didUseWorkAround = false;
 
@@ -112,7 +107,6 @@ public class AgentDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         rootView = inflater.inflate(R.layout.fragment_client_details, container, false);
         activity = (ActionBarActivity) getActivity();
         safeUIBlockingUtility = new SafeUIBlockingUtility(AgentDetailsFragment.this.getActivity());

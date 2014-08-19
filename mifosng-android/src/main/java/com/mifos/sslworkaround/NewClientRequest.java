@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
  */
 public class NewClientRequest extends AsyncTask<CreateClientTransactionRequest, Void, String> {
     public final static String TAG = NewClientRequest.class.getSimpleName();
-    public static String mPGSInstanceUrl = "https://192.168.52.32:8443/mifosng-provider/api/v1/pgsclients";
 
     private String result;
 
@@ -28,6 +27,8 @@ public class NewClientRequest extends AsyncTask<CreateClientTransactionRequest, 
     protected String doInBackground(CreateClientTransactionRequest... createClientTransactionRequest) {
         Log.d(TAG, "doInBackground()");
         String newClientParams = new Gson().toJson(createClientTransactionRequest[0]);
+
+        String mPGSInstanceUrl = WorkAroundConstants.WORK_AROUND_URL + "pgsclients";
 
         HttpClient client = new HttpsWorkaround().getNewHttpClient();
         HttpPost post = new HttpPost(mPGSInstanceUrl);

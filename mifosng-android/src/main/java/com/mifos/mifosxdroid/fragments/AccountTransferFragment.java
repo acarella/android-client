@@ -84,6 +84,7 @@ public class AccountTransferFragment extends Fragment {
 
     public static AccountTransferFragment newInstance(SavingsAccountWithAssociations savingsAccountWithAssociations, String transactionType) {
         AccountTransferFragment fragment = new AccountTransferFragment();
+
         Bundle args = new Bundle();
         args.putString(Constants.SAVINGS_ACCOUNT_NUMBER, savingsAccountWithAssociations.getAccountNo());
         args.putString(Constants.SAVINGS_ACCOUNT_TRANSACTION_TYPE, transactionType);
